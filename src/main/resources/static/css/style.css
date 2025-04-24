@@ -1,0 +1,176 @@
+/* Import font Poppins từ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+/* Thiết lập mặc định cho toàn bộ phần tử */
+* {
+  margin: 0; /* Xóa khoảng cách mặc định */
+  padding: 0; /* Xóa padding mặc định */
+  box-sizing: border-box; /* Tính kích thước phần tử bao gồm cả border và padding */
+  font-family: 'Poppins', sans-serif; /* Font chữ mặc định */
+}
+
+/* Thiết lập cho body (toàn trang) */
+body {
+  display: flex; /* Sử dụng Flexbox để canh giữa */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  min-height: 100vh; /* Chiều cao tối thiểu bằng chiều cao màn hình */
+  background-image: url(https://bkecoit.ecoit.com.vn/sliders/image/1689939341336_ecoit2.png); /* Hình nền */
+  background-repeat: no-repeat; /* Không lặp lại hình nền */
+  background-position: center; /* Căn hình nền vào giữa */
+  background-size: cover; /* Phủ toàn bộ phần nền */
+}
+
+/* Thiết lập cho thẻ section */
+section {
+  position: relative; /* Vị trí tương đối */
+  max-width: 500px; /* Chiều rộng tối đa */
+  background-color: transparent; /* Nền trong suốt */
+  border: 2px solid rgba(255, 255, 255, 0.5); /* Viền mờ màu trắng */
+  border-radius: 20px; /* Bo góc */
+  backdrop-filter: blur(55px); /* Làm mờ nền phía sau */
+  display: flex; /* Sử dụng Flexbox */
+  justify-content: center; /* Căn giữa nội dung theo chiều ngang */
+  align-items: center; /* Căn giữa nội dung theo chiều dọc */
+  padding: 2rem 3rem; /* Khoảng cách bên trong */
+  transition: all 0.5s ease-in-out; /* Hiệu ứng chuyển động mượt */
+}
+
+/* Tiêu đề chính */
+h1 {
+  font-size: 2rem;
+  color: #fff; /* Màu trắng */
+  text-align: center;
+}
+
+/* Hộp chứa input */
+.inputbox {
+  position: relative;
+  margin: 20px 0;
+  max-width: 550px;
+  border-bottom: 2px solid #fff; /* Viền dưới */
+  transition: all 0.5s ease-in-out;
+}
+
+/* Thiết lập cho ô input */
+.inputbox input {
+  width: 100%;
+  height: 40px;
+  background: transparent; /* Nền trong suốt */
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0 35px 0 5px; /* Padding bên trái và phải */
+  color: #fff; /* Màu chữ trắng */
+}
+
+/* Icon trong input */
+.inputbox ion-icon {
+ /* position: absolute;*/
+  right: 8px;
+  color: #fff;
+  font-size: 1.2rem;
+  top: 12px;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Label cho input */
+.inputbox label {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 1rem;
+  pointer-events: none; /* Không cho phép tương tác */
+  transition: all 0.5s ease-in-out;
+}
+
+/* Khi input được focus hoặc có nội dung hợp lệ, label sẽ nổi lên */
+/*
+input:focus ~ label,
+input:valid ~ label {
+  top: -5px;
+  font-size: 0.9rem;
+  color: #a8a8a8;
+}
+*/
+.inputbox label {
+  position: absolute;
+  top: -10px; /* Đặt cố định ở trên */
+  left: 5px;
+  color: #fff;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+/* Nút bấm */
+button {
+  width: 100%;
+  height: 40px;
+  border-radius: 40px; /* Bo tròn */
+  background-color: rgba(255, 255, 255, 1);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.4s ease;
+}
+/* Ghi đè kích thước nút trong ring-1 */
+/* Ghi đè kích thước cho nút có class ring-1 */
+.btn.ring-1 {
+  width: 70px; /* Giảm chiều rộng nhỏ hơn một chút so với trước */
+  height: 28px; /* Giảm chiều cao */
+  border-radius: 14px; /* Bo tròn phù hợp với kích thước mới */
+  font-size: 0.85rem; /* Giảm kích thước chữ cho cân đối */
+  line-height: 28px; /* Căn giữa chữ theo chiều dọc */
+  padding: 0; /* Bỏ padding để kích thước chính xác */
+}
+
+/* Đảm bảo nút btn-danger giữ màu đỏ */
+.btn-danger.ring-1 {
+  background-color: #dc3545; /* Màu đỏ của Bootstrap */
+  color: white;
+  border: none;
+}
+
+/* Thêm hiệu ứng ring-1 (đổ bóng hoặc viền sáng) */
+.btn.ring-1 {
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Đổ bóng sáng nhẹ màu xanh */
+  border: 1px solid rgba(0, 123, 255, 0.3); /* Viền nhẹ */
+  transition: box-shadow 0.3s ease;
+}
+
+/* Hiệu ứng hover cho ring-1 */
+.btn.ring-1:hover {
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.8); /* Đổ bóng sáng hơn khi hover */
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Đoạn văn bản đăng ký tài khoản */
+.register {
+  font-size: 0.9rem;
+  color: #fff;
+  text-align: center;
+  margin: 25px 0 10px;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Định dạng liên kết trong phần đăng ký */
+.register p a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Hiệu ứng khi di chuột qua liên kết */
+.register p a:hover {
+  text-decoration: underline;
+  color: #a8a8a8;
+}
