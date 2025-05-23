@@ -83,7 +83,7 @@ public class SecurityConfig {
                             .hasRole("ADMIN");
 
                     // Quản lý sản phẩm: ADMIN và USER có quyền xem
-                    registry.requestMatchers("/products", "/products/**").hasAnyRole("ADMIN", "USER");
+                    registry.requestMatchers("/products", "/products/**").permitAll();
 
                     // Các thao tác quản lý sản phẩm chỉ dành ADMIN (nếu có thêm)
                      registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**")
@@ -92,8 +92,10 @@ public class SecurityConfig {
                      // quản lý user
                             registry.requestMatchers("users","/users/add", "/users/edit/**", "/users/delete/**")
                                     .hasRole("ADMIN");
+                            registry.requestMatchers("/meetings").permitAll();
+                            registry.requestMatchers("/meetings/create", "/meetings/edit/**", "/meetings/delete/**").hasRole("ADMIN");
 
-                    // Các URL khác yêu cầu đăng nhập
+                            // Các URL khác yêu cầu đăng nhập
                     registry.anyRequest().authenticated(); // Các URL còn lại phải đăng nhập
                 })
                 .build(); // Kết thúc cấu hình
