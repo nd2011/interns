@@ -75,5 +75,6 @@ public class Meeting {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<MyAppUser> participants = new HashSet<>();
+
 }
 

@@ -71,33 +71,31 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(registry -> {
 
-
                     // Các URL public
                     registry.requestMatchers("/req/signup", "/css/**", "/js/**").permitAll();
 
-                    // Cho phép cả ADMIN và USER xem danh sách thực tập sinh
+                    // Quyền admin/user cho interns như hiện tại
                     registry.requestMatchers("/interns", "/interns/**").hasAnyRole("ADMIN", "USER");
+                    registry.requestMatchers("/interns/add", "/interns/edit/**", "/interns/delete/**").hasRole("ADMIN");
 
-                    // Các thao tác thêm, sửa, xóa thực tập sinh chỉ dành cho ADMIN
-                    registry.requestMatchers("/interns/add", "/interns/edit/**", "/interns/delete/**")
-                            .hasRole("ADMIN");
-
-                    // Quản lý sản phẩm: ADMIN và USER có quyền xem
+                    // Sản phẩm
                     registry.requestMatchers("/products", "/products/**").permitAll();
+                    registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**").hasRole("ADMIN");
 
-                    // Các thao tác quản lý sản phẩm chỉ dành ADMIN (nếu có thêm)
-                    registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**")
-                            .hasRole("ADMIN");
+                    // Quản lý user
+                    registry.requestMatchers("/users", "/users/add", "/users/edit/**", "/users/delete/**").hasRole("ADMIN");
 
-                    // quản lý user
-                    registry.requestMatchers("users","/users/add", "/users/edit/**", "/users/delete/**")
-                            .hasRole("ADMIN");
+                    // Cuộc họp
                     registry.requestMatchers("/meetings").permitAll();
                     registry.requestMatchers("/meetings/create", "/meetings/edit/**", "/meetings/delete/**").hasRole("ADMIN");
 
+                    // ** Thêm quyền admin cho dự án: **
+                    registry.requestMatchers("/admin/projects/**").hasRole("ADMIN");
+
                     // Các URL khác yêu cầu đăng nhập
-                    registry.anyRequest().authenticated(); // Các URL còn lại phải đăng nhập
+                    registry.anyRequest().authenticated();
                 })
+
                 .build(); // Kết thúc cấu hình
     }
 }
