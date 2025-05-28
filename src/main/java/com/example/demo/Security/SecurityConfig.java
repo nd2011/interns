@@ -26,9 +26,6 @@ public class SecurityConfig {
     @Autowired
     private final MyAppUserService appUserService;
 
-    public SecurityConfig(MyAppUserService appUserService) {
-        this.appUserService = appUserService;
-    }
     // Bean cung cấp UserDetailsService để Spring dùng để load user từ DB
     @Bean
     public UserDetailsService userDetailsService(){
