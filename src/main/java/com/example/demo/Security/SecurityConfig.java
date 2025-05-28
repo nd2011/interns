@@ -23,12 +23,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor // Tự động sinh constructor với tất cả các trường final
 public class SecurityConfig {
 
-
+    @Autowired
     private final MyAppUserService appUserService;
 
-
-
-
+    public SecurityConfig(MyAppUserService appUserService) {
+        this.appUserService = appUserService;
+    }
     // Bean cung cấp UserDetailsService để Spring dùng để load user từ DB
     @Bean
     public UserDetailsService userDetailsService(){
@@ -59,43 +59,10 @@ public class SecurityConfig {
                     httpForm.loginPage("/req/login").permitAll(); // Trang login tùy chỉnh
                     httpForm.defaultSuccessUrl("/index"); // Sau login thành công, chuyển về /index
                 })
-                .logout(logout -> logout
-                        .logoutUrl("/logout")                      // Đường dẫn logout
-                        .logoutSuccessUrl("/req/login?logout")      // Trang sau khi logout thành công
-                        .invalidateHttpSession(true)               // Hủy phiên (session)
-                        .deleteCookies("JSESSIONID")               // Xóa cookie phiên
-                        .permitAll()
-                )
-                .exceptionHandling(exception -> exception
-                        .accessDeniedPage("/access-denied")
-                )
                 .authorizeHttpRequests(registry -> {
 
-
-                    // Các URL public
-                    registry.requestMatchers("/req/signup", "/css/**", "/js/**").permitAll();
-
-                    // Cho phép cả ADMIN và USER xem danh sách thực tập sinh
-                    registry.requestMatchers("/interns", "/interns/**").hasAnyRole("ADMIN", "USER");
-
-                    // Các thao tác thêm, sửa, xóa thực tập sinh chỉ dành cho ADMIN
-                    registry.requestMatchers("/interns/add", "/interns/edit/**", "/interns/delete/**")
-                            .hasRole("ADMIN");
-
-                    // Quản lý sản phẩm: ADMIN và USER có quyền xem
-                    registry.requestMatchers("/products", "/products/**").permitAll();
-
-                    // Các thao tác quản lý sản phẩm chỉ dành ADMIN (nếu có thêm)
-                    registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**")
-                            .hasRole("ADMIN");
-
-                    // quản lý user
-                    registry.requestMatchers("users","/users/add", "/users/edit/**", "/users/delete/**")
-                            .hasRole("ADMIN");
-                    registry.requestMatchers("/meetings").permitAll();
-                    registry.requestMatchers("/meetings/create", "/meetings/edit/**", "/meetings/delete/**").hasRole("ADMIN");
-
-                    // Các URL khác yêu cầu đăng nhập
+                    registry.requestMatchers("/api/interns/**").permitAll();
+                    registry.requestMatchers("/req/signup", "/css/**", "/js/**").permitAll(); // Các URL này được phép truy cập không cần đăng nhập
                     registry.anyRequest().authenticated(); // Các URL còn lại phải đăng nhập
                 })
                 .build(); // Kết thúc cấu hình
