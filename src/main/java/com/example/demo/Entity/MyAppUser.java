@@ -1,15 +1,11 @@
 package com.example.demo.Entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.FetchType;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +29,16 @@ public class MyAppUser {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
+    @ManyToMany(mappedBy = "assignedUsers", fetch = FetchType.LAZY)
+    private Set<Project> projects = new HashSet<>();
 
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
+    }
     // Getters và Setters
 
     public Long getId() {
