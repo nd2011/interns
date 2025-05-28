@@ -54,7 +54,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable) // Tắt bảo vệ CSRF (có thể bật lại nếu dùng form POST)
+                .csrf(AbstractHttpConfigurer::disable) // Tắt CSRF
                 .formLogin(httpForm -> {
                     httpForm.loginPage("/req/login").permitAll(); // Trang login tùy chỉnh
                     httpForm.defaultSuccessUrl("/index"); // Sau login thành công, chuyển về /index
@@ -79,9 +79,12 @@ public class SecurityConfig {
                     registry.requestMatchers("/interns/add", "/interns/edit/**", "/interns/delete/**").hasRole("ADMIN");
 
                     // Sản phẩm
+                    // Quản lý sản phẩm: ADMIN và USER có quyền xem
                     registry.requestMatchers("/products", "/products/**").permitAll();
-                    registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**").hasRole("ADMIN");
 
+                    // Các thao tác quản lý sản phẩm chỉ dành ADMIN (nếu có thêm)
+                    registry.requestMatchers("/product/products/add", "/product/products/edit/**", "/product/products/delete/**")
+                            .hasRole("ADMIN");
                     // Quản lý user
                     registry.requestMatchers("/users", "/users/add", "/users/edit/**", "/users/delete/**").hasRole("ADMIN");
 
@@ -89,13 +92,12 @@ public class SecurityConfig {
                     registry.requestMatchers("/meetings").permitAll();
                     registry.requestMatchers("/meetings/create", "/meetings/edit/**", "/meetings/delete/**").hasRole("ADMIN");
 
-                    // ** Thêm quyền admin cho dự án: **
+                    // Thêm quyền admin cho dự án
                     registry.requestMatchers("/admin/projects/**").hasRole("ADMIN");
 
                     // Các URL khác yêu cầu đăng nhập
                     registry.anyRequest().authenticated();
                 })
-
-                .build(); // Kết thúc cấu hình
+                .build();
     }
 }

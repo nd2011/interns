@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MyAppUserRepository extends JpaRepository<MyAppUser, Long>{
+public interface MyAppUserRepository extends JpaRepository<MyAppUser, Long> {
 
         Optional<MyAppUser> findByUsername(String username);
 
-        boolean existsByUsername(String admin);
+        boolean existsByUsername(String username);
+
+        // Thêm phương thức kiểm tra tồn tại email
+        boolean existsByEmail(String email);  // Không cần static, chỉ cần khai báo đúng như thế này
 }
