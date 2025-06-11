@@ -1,7 +1,9 @@
 package com.example.demo.Controller;
 
+import com.example.demo.Entity.MyAppUser;
 import com.example.demo.Entity.Project;
 import com.example.demo.Entity.Task;
+import com.example.demo.Repository.MyAppUserRepository;  // Thêm import cho MyAppUserRepository
 import com.example.demo.Service.TaskService;
 import com.example.demo.Repository.ProjectRepository;
 
@@ -24,6 +26,9 @@ public class AdminProjectTaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private MyAppUserRepository myAppUserRepository;  // Inject MyAppUserRepository
 
     @GetMapping("/projects/{projectId}/tasks")
     public String viewProjectTasks(@PathVariable Long projectId, Model model) {
@@ -64,5 +69,20 @@ public class AdminProjectTaskController {
         taskService.toggleStatus(taskId);
         Long projectId = taskService.getProjectIdByTask(taskId);
         return "redirect:/admin/projects/" + projectId + "/tasks";
+    }
+
+    @GetMapping("/users/{userId}")
+    public String viewUserDetails(@PathVariable Long userId, Model model) {
+        // Lấy người dùng từ cơ sở dữ liệu, gọi phương thức từ đối tượng đã được inject
+        MyAppUser user = myAppUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        // Lấy các dự án mà người dùng đã được phân công
+        List<Project> projects = projectRepository.findByAssignedUsers(user);
+
+        // Thêm thông tin vào model
+        model.addAttribute("user", user);
+        model.addAttribute("projects", projects);
+
+        return "project/user-details";  // Trả về trang hiển thị chi tiết người dùng
     }
 }
