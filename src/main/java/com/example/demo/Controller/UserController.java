@@ -87,4 +87,22 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    // API REST để lấy số lượng người dùng
+    @ResponseBody
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getUserCount() {
+        long count = service.count();
+        return ResponseEntity.ok((int) count);
+    }
+
+    // API REST để lấy danh sách người dùng
+    @ResponseBody
+    @GetMapping("/list")
+    public ResponseEntity<List<MyAppUser>> getUserList() {
+        List<MyAppUser> allUsers = service.findAll();
+        List<MyAppUser> nonAdminUsers = allUsers.stream()
+                .filter(user -> !user.getRoles().contains("admin"))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(nonAdminUsers);
+    }
 }

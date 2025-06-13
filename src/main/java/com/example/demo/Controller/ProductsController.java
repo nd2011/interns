@@ -1,52 +1,74 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Entity.Product;
-import com.example.demo.Service.ProductService;
+import com.example.demo.Repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
-@RequestMapping("/product/products") // Định nghĩa root URL cho các sản phẩm
+@RequestMapping("/product/products")
 public class ProductsController {
 
-    private final ProductService service;
+    @Autowired
+    private ProductRepository productRepository;
 
-    // Constructor để Spring tự inject ProductService
-    public ProductsController(ProductService service) {
-        this.service = service;
-    }
+    // Define the directory where images will be saved
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
-    // Trang hiển thị danh sách sản phẩm
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("products", service.findAll()); // Thêm danh sách sản phẩm vào model
-        return "product/products"; // Render trang danh sách sản phẩm trong thư mục product
+        model.addAttribute("products", productRepository.findAll());
+        return "product/products";
     }
 
-    // Giao diện form thêm sản phẩm mới
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("product", new Product()); // Tạo object rỗng để binding form
-        return "product/add-product"; // Hiển thị trang thêm sản phẩm trong thư mục product
+        model.addAttribute("product", new Product());
+        return "product/add-product";
     }
 
-    // Xử lý khi submit form thêm sản phẩm mới
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute("product") Product product) {
-        product.setCreatedAt(LocalDateTime.now());
-        service.save(product); // Lưu sản phẩm vào cơ sở dữ liệu
-        return "redirect:/product/products"; // Chuyển hướng về danh sách sản phẩm
+    public String addProduct(@ModelAttribute Product product, @RequestParam("image") MultipartFile image) {
+        if (!image.isEmpty()) {
+            try {
+                // Xác định đường dẫn tuyệt đối lưu ảnh
+                String imagePath = "C:\\Users\\PC\\Downloads\\" + image.getOriginalFilename();  // Đường dẫn tuyệt đối
+
+                // Tạo file từ đường dẫn tuyệt đối
+                File file = new File(imagePath);  // Lưu ảnh vào thư mục "Downloads"
+                image.transferTo(file);  // Lưu ảnh vào thư mục
+
+                // Lưu đường dẫn tuyệt đối vào cơ sở dữ liệu
+                product.setImage(imagePath);  // Set đường dẫn tuyệt đối vào sản phẩm
+
+                // Lưu sản phẩm vào cơ sở dữ liệu
+                productRepository.save(product);
+
+                return "redirect:/product/products";  // Chuyển hướng về trang danh sách sản phẩm
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";  // Nếu có lỗi, trả về trang lỗi
+            }
+        }
+        return "error";  // Nếu không có ảnh, trả về trang lỗi
     }
+
 
     // API: Lấy thông tin sản phẩm theo ID (trả về JSON)
     @ResponseBody
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
-        return service.findById(id)
+        return productRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -54,7 +76,7 @@ public class ProductsController {
     // Giao diện sửa thông tin sản phẩm
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model) {
-        Product product = service.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với id: " + id));
         model.addAttribute("product", product); // Thêm sản phẩm vào model để sửa
         return "product/edit-product"; // Hiển thị trang sửa trong thư mục product
@@ -64,15 +86,15 @@ public class ProductsController {
     @PostMapping("/edit/{id}")
     public String updateProduct(@PathVariable Integer id, @ModelAttribute("product") Product updatedProduct) {
         updatedProduct.setId(id); // Đảm bảo ID không thay đổi khi cập nhật
-        service.save(updatedProduct); // Lưu sản phẩm đã cập nhật
+        productRepository.save(updatedProduct); // Lưu sản phẩm đã cập nhật
         return "redirect:/product/products"; // Chuyển hướng về danh sách sản phẩm
     }
 
     // Xử lý xóa sản phẩm theo ID
     @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
-        if (service.findById(id).isPresent()) {
-            service.deleteById(id); // Xóa sản phẩm nếu tồn tại
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id); // Xóa sản phẩm nếu tồn tại
         }
         return "redirect:/product/products"; // Chuyển hướng về danh sách sau khi xóa
     }
