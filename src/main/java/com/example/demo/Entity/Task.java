@@ -42,6 +42,15 @@ public class Task {
     public void setDescription(String description) { this.description = description; }
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
+
+    // Thêm phương thức getter cho tên của project
+    public String getProjectName() {
+        if (project != null) {
+            return project.getName();  // Giả sử Project có phương thức getName()
+        }
+        return "Chưa có dự án";
+    }
+
     public MyAppUser getAssignedUser() { return assignedUser; }
     public void setAssignedUser(MyAppUser assignedUser) { this.assignedUser = assignedUser; }
     public LocalDate getDeadline() { return deadline; }

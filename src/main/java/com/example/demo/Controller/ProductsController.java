@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.Entity.Product;
 import com.example.demo.Repository.ProductRepository;
+import com.example.demo.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,13 +23,21 @@ public class ProductsController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private ProductService productService;
+
     // Define the directory where images will be saved
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("products",  productService.findAll());
         return "product/products";
+    }
+    @GetMapping("/show")
+    public String showproductuser(Model model) {
+        model.addAttribute("products",  productService.findAll());
+        return "product/product-list-user";
     }
 
     @GetMapping("/add")
@@ -38,29 +47,11 @@ public class ProductsController {
     }
 
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute Product product, @RequestParam("image") MultipartFile image) {
-        if (!image.isEmpty()) {
-            try {
-                // Xác định đường dẫn tuyệt đối lưu ảnh
-                String imagePath = "C:\\Users\\PC\\Downloads\\" + image.getOriginalFilename();  // Đường dẫn tuyệt đối
+    public String addProduct(@ModelAttribute Product product) {
+        // Lưu sản phẩm vào cơ sở dữ liệu
+        productRepository.save(product);
 
-                // Tạo file từ đường dẫn tuyệt đối
-                File file = new File(imagePath);  // Lưu ảnh vào thư mục "Downloads"
-                image.transferTo(file);  // Lưu ảnh vào thư mục
-
-                // Lưu đường dẫn tuyệt đối vào cơ sở dữ liệu
-                product.setImage(imagePath);  // Set đường dẫn tuyệt đối vào sản phẩm
-
-                // Lưu sản phẩm vào cơ sở dữ liệu
-                productRepository.save(product);
-
-                return "redirect:/product/products";  // Chuyển hướng về trang danh sách sản phẩm
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "error";  // Nếu có lỗi, trả về trang lỗi
-            }
-        }
-        return "error";  // Nếu không có ảnh, trả về trang lỗi
+        return "redirect:/product/products";  // Chuyển hướng về trang danh sách sản phẩm
     }
 
 

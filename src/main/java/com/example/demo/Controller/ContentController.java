@@ -35,4 +35,8 @@ public class ContentController {
         model.addAttribute("username", username); // Truyền vào model
         return "index"; // Trang index
     }
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied"; // trả về file access-denied.html
+    }
 }

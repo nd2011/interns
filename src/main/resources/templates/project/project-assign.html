@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="/css/project-style.css">
+<head>
+  <link rel="stylesheet" href="/css/project-style.css">
+  <link rel="stylesheet" href="/css/index-style.css">
+  <link rel="stylesheet" href="/css/header-style.css">
+  <title>Phân công user cho dự án</title>
+</head>
+<body>
+<a th:href="@{/user/projects}" class="btn btn-add">về lại</a>
+<h1>Phân công user cho dự án: <span th:text="${project.name}"></span></h1>
+
+<form th:action="@{'/admin/projects/' + ${project.id} + '/assign'}" method="post">
+
+  <div th:each="user : ${users}">
+    <input type="checkbox" name="userIds" th:value="${user.id}" id="user__${user.id}"/>
+    <label th:for="'user__' + ${user.id}" th:text="${user.username} + ' (' + ${user.fullname} + ')'"></label>
+  </div>
+
+  <br/>
+  <button type="submit">Phân công</button>
+</form>
+
+<a href="/admin/projects/list">Quay lại danh sách dự án</a>
+</body>
+</html>

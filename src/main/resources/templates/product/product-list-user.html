@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="/css/pdu.css">
+    <link rel="stylesheet" href="/css/header-style.css">
+</head>
+<header>
+    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="fragments/navbar :: navbar"></div>
+</header>
+<body>
+
+<!-- Nội dung chính -->
+<main class="product-list-container">
+    <a th:href="@{/index}" class="btn btn-add">Về trang chủ</a>
+    <h2>Danh sách sản phẩm</h2>
+
+    <!-- Wrapper for product cards -->
+    <div class="product-cards-container">
+        <!-- Loop through products and display each as a card -->
+        <div th:each="product : ${products}" class="product-card">
+            <img th:src="@{${product.image}}" alt="product image" class="product-image" />
+            <div class="product-details">
+                <h3 class="product-name" th:text="${product.name}">Tên sản phẩm</h3>
+                <p class="product-description" th:text="${product.description}">Mô tả sản phẩm</p>
+                <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</p>
+                <p class="product-manufacture-date" th:text="${product.manufactureDate != null ? #temporals.format(product.manufactureDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2025</p>
+                <p class="product-expiry-date" th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2026</p>
+                <p class="product-quantity" th:text="${product.quantity}">10</p>
+                <p class="product-cost-price" th:text="${#numbers.formatDecimal(product.costPrice, 1, 2)}">1000.00</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
