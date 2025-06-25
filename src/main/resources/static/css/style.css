@@ -15,7 +15,7 @@ body {
   align-items: center; /* Căn giữa theo chiều dọc */
   justify-content: center; /* Căn giữa theo chiều ngang */
   min-height: 100vh; /* Chiều cao tối thiểu bằng chiều cao màn hình */
-  background-image: url(https://bkecoit.ecoit.com.vn/sliders/image/1689939341336_ecoit2.png); /* Hình nền */
+  background-image: url(https://ecoit.com.vn/assets/images/banner%20ecoit-01.png); /* Hình nền */
   background-repeat: no-repeat; /* Không lặp lại hình nền */
   background-position: center; /* Căn hình nền vào giữa */
   background-size: cover; /* Phủ toàn bộ phần nền */

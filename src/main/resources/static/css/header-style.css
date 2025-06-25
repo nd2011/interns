@@ -1,0 +1,141 @@
+/* Header styling */
+header {
+  background: linear-gradient(135deg, #2c3e50, #4CAF50);
+  color: white;
+  padding: 20px 30px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-bottom: 3px solid #1abc9c;
+  z-index: 1000;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease;
+}
+
+header h1:hover {
+  color: #f1f1f1;
+}
+
+/* Responsive container styling (if not using Bootstrap container) */
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* User info styling */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.user-info span {
+  white-space: nowrap;
+}
+
+.user-info a {
+  background-color: #e74c3c;
+  color: white;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.user-info a:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
+
+/* Responsive tweaks for header */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.4rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .user-info {
+    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+    text-align: right;
+  }
+
+  .user-info a {
+    width: fit-content;
+  }
+}
+
+/* Nav bar styling */
+nav.bg-dark {
+  background-color: #222831; /* Màu nền tối hiện đại */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.5rem 0;
+}
+
+nav.bg-dark .container {
+  display: flex;
+  gap: 1.5rem; /* Khoảng cách giữa các link */
+}
+
+nav.bg-dark .nav-link {
+  color: #eeeeee;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  position: relative;
+}
+
+nav.bg-dark .nav-link:hover,
+nav.bg-dark .nav-link:focus {
+  background-color: #00adb5; /* Màu xanh biển nổi bật khi hover */
+  color: white;
+  outline: none;
+  text-decoration: none;
+}
+
+nav.bg-dark .nav-link.active {
+  background-color: #00adb5;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 173, 181, 0.5);
+}
+
+nav.bg-dark .nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 10%;
+  width: 80%;
+  height: 3px;
+  background-color: #00adb5;
+  border-radius: 2px;
+}
+
+/* Responsive tweaks for nav */
+@media (max-width: 768px) {
+  nav.bg-dark .container {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  nav.bg-dark .nav-link {
+    padding: 0.6rem 1rem;
+  }
+}

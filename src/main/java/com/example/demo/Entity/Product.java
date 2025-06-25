@@ -43,6 +43,17 @@ public class Product {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public String getIntro() {
+        return intro;
+    }
+
+    public void setIntro(String intro) {
+        this.intro = intro;
+    }
+
+    @Column(columnDefinition = "Text")
+    private String intro;
+
     // Getters and setters
 
     public Integer getId() {

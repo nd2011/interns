@@ -1,0 +1,169 @@
+/* Reset cơ bản */
+* {
+  box-sizing: border-box;
+}
+
+/* BODY & BACKGROUND */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  background-image: url(https://bkecoit.ecoit.com.vn/sliders/image/1689939341336_ecoit2.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+/* CONTAINER CHÍNH */
+.product-list-container {
+  max-width: 1500px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.95); /* nền trắng trong suốt */
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.btn-add {
+  margin: 20px 0;
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-size: 1rem;
+  max-width: 240px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-add:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #212529;
+  border: 1.5px solid #ffc107;
+  padding: 8px 18px;
+  min-width: 60px;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #fff;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: #fff;
+  border: 1.5px solid #dc3545;
+  padding: 8px 18px;
+  min-width: 60px;
+}
+
+.btn-delete:hover {
+  background-color: #b02a37;
+  border-color: #a52834;
+}
+
+/* Wrapper to handle table overflow */
+.table-wrapper {
+  max-width: 100%;
+  overflow-x: auto; /* Makes the table horizontally scrollable if necessary */
+  margin-bottom: 20px;
+}
+
+/* Tables */
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th, .product-table td {
+  padding: 14px 20px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+/* Add hover effect for rows */
+.product-table tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Ensure buttons are not overflowing */
+.btn {
+  padding: 8px 16px;
+  border-radius: 30px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  /* Make the table horizontally scrollable */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide the table header on small screens for cleaner view */
+  .product-table thead {
+    display: none;
+  }
+
+  /* Display each row as a block and allow scrolling */
+  .product-table tbody tr {
+    display: block;
+    margin-bottom: 10px;
+    background-color: #fff;
+    padding: 15px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .product-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .product-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .product-table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #555;
+    flex: 1;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+}

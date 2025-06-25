@@ -1,0 +1,87 @@
+/* Cấu hình toàn bộ trang */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('/img/your-background.png') no-repeat center center fixed; /* Hình nền */
+    background-size: cover; /* Hình nền phủ toàn bộ */
+}
+
+/* Cấu hình main */
+main {
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.95); /* Màu nền mờ */
+    margin: 30px auto;
+    max-width: 1200px; /* Giới hạn độ rộng của main */
+    border-radius: 8px;
+}
+
+/* Cấu hình bảng */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+/* Cấu hình thẻ th và td */
+th, td {
+    border: 1px solid #ccc; /* Đường viền bảng */
+    padding: 8px;
+    text-align: left;
+}
+
+/* Cấu hình th */
+th {
+    background-color: #007BFF;
+    color: white;
+    text-transform: uppercase; /* Viết hoa tiêu đề */
+}
+
+/* Cấu hình footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Tùy chỉnh màu nền cho các dòng trong bảng khi hover */
+tr:hover {
+    background-color: #f1f1f1; /* Màu nền khi hover lên một dòng */
+}
+
+/* Tùy chỉnh các ô trong bảng khi có focus */
+td:focus {
+    outline: none;
+    background-color: #e9ecef; /* Màu nền khi focus vào một ô */
+}
+
+/* Các trường hợp khi cần canh giữa nội dung */
+.center {
+    text-align: center;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Canh giữa theo chiều dọc */
+}
+
+/* Các trường hợp khi cần canh phải nội dung */
+.right {
+    text-align: right;
+}
+
+/* Đảm bảo responsive */
+@media (max-width: 768px) {
+    main {
+        margin: 10px; /* Giảm margin cho các thiết bị di động */
+    }
+    table {
+        font-size: 14px; /* Giảm kích thước font cho bảng */
+    }
+}

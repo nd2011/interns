@@ -1,0 +1,157 @@
+/* Reset cơ bản */
+* {
+  box-sizing: border-box;
+}
+
+/* BODY & BACKGROUND */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  background-image: url(https://bkecoit.ecoit.com.vn/sliders/image/1689939341336_ecoit2.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+/* CONTAINER CHÍNH */
+.meeting-list-container {
+  max-width: 960px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.95); /* nền trắng trong suốt */
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* TIÊU ĐỀ */
+.meeting-list-container h1 {
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #007bff;
+  user-select: none;
+}
+
+/* TABLES */
+.meeting-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px; /* khoảng cách dọc giữa các hàng */
+  background-color: transparent;
+}
+
+.meeting-table thead {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  display: table-header-group;
+}
+
+.meeting-table thead th {
+  color: #fff; /* chữ trắng nổi trên nền xanh */
+  font-weight: 700;
+  padding: 14px 20px;
+  text-align: left;
+  user-select: none;
+}
+.meeting-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.meeting-table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.meeting-table tbody tr {
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+  display: table-row;
+}
+
+.meeting-table tbody tr:hover {
+  background-color: #e9f0ff;
+  box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+}
+
+.meeting-table tbody td {
+  padding: 14px 20px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: white;
+  border: none;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.btn-add {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-size: 1rem;
+  max-width: 240px;
+  width: 100%;
+  display: inline-block;
+}
+
+.btn-add:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* RESPONSIVE STYLES */
+@media (max-width: 640px) {
+  .meeting-list-container {
+    padding: 20px 15px;
+  }
+  .meeting-table thead {
+    display: none;
+  }
+  .meeting-table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background-color: #fff;
+    padding: 15px 10px;
+  }
+  .meeting-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+  }
+  .meeting-table tbody td:last-child {
+    border-bottom: none;
+  }
+  .meeting-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
+    flex: 1;
+  }
+}

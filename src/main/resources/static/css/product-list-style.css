@@ -1,0 +1,177 @@
+/* Reset cơ bản */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 40px 20px;
+  color: #333;
+  display: flex; /* Sử dụng Flexbox để canh giữa */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    min-height: 100vh; /* Chiều cao tối thiểu bằng chiều cao màn hình */
+    background-image: url(https://bkecoit.ecoit.com.vn/sliders/image/1689939341336_ecoit2.png); /* Hình nền */
+    background-repeat: no-repeat; /* Không lặp lại hình nền */
+    background-position: center; /* Căn hình nền vào giữa */
+    background-size: cover;
+}
+
+/* Container căn giữa */
+.product-list-container {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Tiêu đề */
+.product-list-container h2 {
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #222;
+  text-align: center;
+}
+
+/* Bảng sản phẩm */
+.product-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+}
+
+.product-table thead tr {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.product-table thead th {
+  padding: 14px 20px;
+  text-align: left;
+  user-select: none;
+}
+
+/* Các hàng tbody */
+.product-table tbody tr {
+  background-color: #fafafa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+}
+
+.product-table tbody tr:hover {
+  background-color: #e9f0ff;
+  box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+}
+
+/* Các ô td */
+.product-table tbody td {
+  padding: 14px 20px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #444;
+  border: none;
+}
+
+/* Hành động */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Nút bấm */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+/* Nút sửa */
+.btn-edit {
+  background-color: #ffc107;
+  color: #212529;
+  border: 1.5px solid #ffc107;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #fff;
+}
+
+/* Nút xóa */
+.btn-delete {
+  background-color: #dc3545;
+  color: #fff;
+  border: 1.5px solid #dc3545;
+}
+
+.btn-delete:hover {
+  background-color: #b02a37;
+  border-color: #a52834;
+}
+
+/* Nút thêm sản phẩm */
+.btn-add {
+  margin-top: 25px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 40px;
+  display: inline-block;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 240px;
+  text-align: center;
+}
+
+.btn-add:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* Responsive nhỏ */
+@media (max-width: 640px) {
+  .product-list-container {
+    padding: 20px 15px;
+  }
+  .product-table thead {
+    display: none;
+  }
+  .product-table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+  }
+  .product-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 10px;
+    font-size: 0.9rem;
+  }
+  .product-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
+    flex: 1;
+  }
+  .actions {
+    justify-content: flex-start;
+  }
+}

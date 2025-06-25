@@ -1,0 +1,29 @@
+<!-- Giao diện Quản trị: Chi tiết người dùng với các dự án -->
+<html xmlns:th="http://www.thymeleaf.org">
+<h1>Chi tiết người dùng: <span th:text="${user.fullname}"></span></h1>
+
+<h2>Dự án đã được phân công</h2>
+<table border="1" cellpadding="5">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tên dự án</th>
+        <th>Mô tả</th>
+        <th>Nhiệm vụ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="project : ${user.projects}">
+        <td th:text="${project.id}"></td>
+        <td th:text="${project.name}"></td>
+        <td th:text="${project.description}"></td>
+        <td>
+            <ul>
+                <li th:each="task : ${project.tasks}" th:text="${task.name}"></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a href="/admin/users">Quay lại danh sách người dùng</a>
