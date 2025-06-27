@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.Entity.MyAppUser;
 import com.example.demo.Repository.MyAppUserRepository;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -21,15 +23,21 @@ public class RegistrationController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> createUser(@RequestBody MyAppUser user) {
-        // Kiểm tra username hoặc email đã tồn tại chưa
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody MyAppUser user) {
+        Map<String, Object> response = new HashMap<>();
+
+        // Kiểm tra username đã tồn tại
         if (myAppUserRepository.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body(new ErrorResponse("Username is already taken."));
+            response.put("success", false);
+            response.put("message", "Username is already taken.");
+            return ResponseEntity.badRequest().body(response);
         }
 
-        // Kiểm tra email đã tồn tại chưa
+        // Kiểm tra email đã tồn tại
         if (myAppUserRepository.existsByEmail(user.getEmail())) {
-            return ResponseEntity.badRequest().body(new ErrorResponse("Email is already registered."));
+            response.put("success", false);
+            response.put("message", "Email is already registered.");
+            return ResponseEntity.badRequest().body(response);
         }
 
         // Mã hóa mật khẩu
@@ -50,43 +58,14 @@ public class RegistrationController {
             // Trả về user đã lưu (có thể loại bỏ mật khẩu trước khi trả về)
             savedUser.setPassword(null); // Ẩn mật khẩu khi trả về JSON
 
-            // Trả về kết quả thành công
-            return ResponseEntity.ok(new SuccessResponse("User registered successfully", savedUser));
+            response.put("success", true);
+            response.put("message", "User registered successfully");
+            response.put("user", savedUser);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            // Nếu có lỗi khi lưu người dùng vào DB
-            return ResponseEntity.status(500).body(new ErrorResponse("An error occurred while saving the user."));
-        }
-    }
-
-    // Phản hồi lỗi chung
-    public static class ErrorResponse {
-        private String message;
-
-        public ErrorResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-
-    // Phản hồi thành công chung
-    public static class SuccessResponse {
-        private String message;
-        private MyAppUser user;
-
-        public SuccessResponse(String message, MyAppUser user) {
-            this.message = message;
-            this.user = user;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public MyAppUser getUser() {
-            return user;
+            response.put("success", false);
+            response.put("message", "An error occurred while saving the user.");
+            return ResponseEntity.status(500).body(response);
         }
     }
 }

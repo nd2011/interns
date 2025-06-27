@@ -6,7 +6,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/signup.js" defer></script>
 </head>
 <body>
 <section>
@@ -39,7 +38,6 @@
             <label for="">Confirm Password</label>
         </div>
 
-
         <div class="inputbox">
             <ion-icon name="calendar-outline"></ion-icon>
             <input type="number" id="year" name="year" required>
@@ -52,64 +50,60 @@
         </div>
     </form>
 </section>
+<script>
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('passwordcon').value;
+        const email = document.getElementById('email').value;
+        const fullname = document.getElementById('fullname').value;
+        const year = document.getElementById('year').value;
+
+        if (password !== confirmPassword) {
+            alert('Mật khẩu và xác nhận mật khẩu không khớp!');
+            return;
+        }
+
+        const userEntity = {
+            username: username,
+            email: email,
+            password: password,
+            fullname: fullname,
+            year: parseInt(year),
+            joindate: new Date().toISOString(),
+            roles: ['user']
+        };
+
+        fetch('/req/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userEntity)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi khi gửi yêu cầu');
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                alert('Đăng ký thành công!');
+                form.reset();
+                window.location.href = "/req/login";
+            } else {
+                alert('Đăng ký thất bại: ' + (result.message || 'Lỗi không xác định!'));
+            }
+        })
+        .catch(err => {
+            console.error('Lỗi kết nối:', err);
+            alert('Đã có lỗi xảy ra khi gửi dữ liệu!');
+        });
+    });
+</script>
 </body>
 </html>
-<script>
-    form.addEventListener('submit', function (e) {
-       e.preventDefault(); // Ngăn form gửi dữ liệu theo cách mặc định
-
-       // Lấy dữ liệu từ form
-       const username = document.getElementById('username').value;
-       const password = document.getElementById('password').value;
-       const confirmPassword = document.getElementById('passwordcon').value;
-       const email = document.getElementById('email').value;
-       const fullname = document.getElementById('fullname').value;
-       const year = document.getElementById('year').value;
-
-       // Kiểm tra mật khẩu và xác nhận mật khẩu có khớp không
-       if (password !== confirmPassword) {
-           alert('Mật khẩu và xác nhận mật khẩu không khớp!');
-           return;
-       }
-
-       // Tạo đối tượng (entity) người dùng
-       const userEntity = {
-           username: username,
-           email: email,
-           password: password,
-           fullname: fullname,
-           year: year,
-           joindate: new Date().toISOString(),  // Thời gian gia nhập
-           roles: ['user']  // Mặc định người dùng có role "user", có thể thay đổi
-       };
-
-       // Chuyển đối tượng thành JSON
-       const jsonData = JSON.stringify(userEntity);
-
-       // Gửi dữ liệu qua fetch
-       fetch('/req/signup', {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json'
-           },
-           body: jsonData
-       })
-       .then(response => response.json())  // Giả sử server trả về JSON
-       .then(result => {
-           if (result.success) {
-               alert('Đăng ký thành công!');
-               // Bạn có thể chuyển hướng người dùng hoặc reset form ở đây
-               form.reset();
-           } else {
-               // Kiểm tra trường message có tồn tại không, nếu không, dùng giá trị mặc định
-               const message = result.message || 'Lỗi không xác định!';
-               alert('Đăng ký thất bại: ' + message);
-           }
-       })
-       .catch(err => {
-           console.error('Lỗi kết nối:', err);
-           alert('Đã có lỗi xảy ra!');
-       });
-   });
-
-</script>
