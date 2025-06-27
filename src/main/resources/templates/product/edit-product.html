@@ -15,12 +15,15 @@
             <label class="form-label">Tên sản phẩm</label>
             <input type="text" th:field="*{name}" class="form-control" placeholder="Nhập tên sản phẩm" required/>
         </div>
-
+        <div class="mb-3">
+            <label class="form-label">Bài viết giới thiệu</label>
+            <textarea id="intro" name="intro" class="form-control" rows="6"
+                      th:text="${product.intro}"></textarea>
+        </div>
         <div class="mb-3">
             <label class="form-label">Mô tả</label>
             <textarea th:field="*{description}" class="form-control" placeholder="Mô tả sản phẩm"></textarea>
         </div>
-
         <div class="mb-3">
             <label class="form-label">Giá</label>
             <input type="number" th:field="*{price}" class="form-control" step="0.01" placeholder="Nhập giá" required/>

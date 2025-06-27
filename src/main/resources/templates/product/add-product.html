@@ -16,7 +16,10 @@
             <label for="name" class="form-label">Tên Sản Phẩm</label>
             <input type="text" class="form-control" id="name" th:field="*{name}" required />
         </div>
-
+        <div class="mb-4">
+            <label for="intro" class="form-label">Bài viết giới thiệu</label>
+            <textarea id="intro" name="intro" class="form-control" rows="6" placeholder="Nhập nội dung HTML hoặc văn bản có định dạng"></textarea>
+        </div>
         <div class="mb-4">
             <label for="description" class="form-label">Mô Tả</label>
             <textarea class="form-control" id="description" th:field="*{description}" placeholder="Mô tả sản phẩm"></textarea>
@@ -63,3 +66,7 @@
 
 </body>
 </html>
+<script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('intro');
+</script>

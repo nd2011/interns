@@ -20,7 +20,7 @@
   <a th:href="@{/index}" class="btn btn-add">về trang chủ</a>
   <h2>Danh sách sản phẩm</h2>
 
-  <!-- Added a wrapper for responsive table -->
+  <!-- Wrapper table -->
   <div class="table-wrapper">
     <table class="product-table" border="1" cellpadding="8" cellspacing="0">
       <thead>
@@ -39,18 +39,18 @@
       </thead>
       <tbody>
       <tr th:each="product : ${products}">
-        <td data-label="ID" th:text="${product.id}">1</td>
-        <td data-label="Tên sản phẩm" th:text="${product.name}">Tên sản phẩm</td>
-        <td data-label="Mô tả" th:text="${product.description}">Mô tả sản phẩm</td>
-        <td data-label="Giá" th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</td>
-        <td data-label="Ngày sản xuất" th:text="${product.manufactureDate != null ? #temporals.format(product.manufactureDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2025</td>
-        <td data-label="Ngày hết hạn" th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2026</td>
-        <td data-label="Số lượng" th:text="${product.quantity}">10</td>
-        <td data-label="Giá vốn" th:text="${#numbers.formatDecimal(product.costPrice, 1, 2)}">1000.00</td>
-        <td data-label="Hình ảnh">
+        <td th:text="${product.id}">1</td>
+        <td th:text="${product.name}">Tên sản phẩm</td>
+        <td th:text="${product.description}">Mô tả sản phẩm</td>
+        <td th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</td>
+        <td th:text="${product.manufactureDate != null ? #temporals.format(product.manufactureDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2025</td>
+        <td th:text="${product.expiryDate != null ? #temporals.format(product.expiryDate, 'dd/MM/yyyy') : 'N/A'}">01/01/2026</td>
+        <td th:text="${product.quantity}">10</td>
+        <td th:text="${#numbers.formatDecimal(product.costPrice, 1, 2)}">1000.00</td>
+        <td>
           <img th:src="@{${product.image}}" alt="product image" width="50" />
         </td>
-        <td data-label="Hành động" class="actions">
+        <td class="actions">
           <a th:href="@{/product/products/edit/{id}(id=${product.id})}" class="btn btn-edit">Sửa</a>
           <form th:action="@{/product/products/delete/{id}(id=${product.id})}" method="post" style="display:inline;">
             <button type="submit" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
@@ -60,6 +60,17 @@
       </tbody>
     </table>
   </div>
+
+<!--  &lt;!&ndash; Phân trang &ndash;&gt;-->
+<!--  <div class="pagination" th:if="${products}">-->
+<!--    <ul class="pagination">-->
+<!--      <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">-->
+<!--        <a th:href="@{'/product/products?page=' + ${i}}"-->
+<!--           th:text="${i + 1}"-->
+<!--           th:classappend="${i == products.number} ? 'active' : ''"></a>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--  </div>-->
 
   <a th:href="@{/product/products/add}" class="btn btn-add">Thêm sản phẩm mới</a>
 </main>

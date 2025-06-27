@@ -47,12 +47,13 @@ public class ProductsController {
     }
 
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute Product product) {
-        // Lưu sản phẩm vào cơ sở dữ liệu
+    public String addProduct(@ModelAttribute Product product,
+                             @RequestParam("intro") String intro) {
+        product.setIntro(intro);
         productRepository.save(product);
-
-        return "redirect:/product/products";  // Chuyển hướng về trang danh sách sản phẩm
+        return "redirect:/product/products";
     }
+
 
 
     // API: Lấy thông tin sản phẩm theo ID (trả về JSON)
@@ -75,10 +76,13 @@ public class ProductsController {
 
     // Xử lý khi submit form sửa sản phẩm
     @PostMapping("/edit/{id}")
-    public String updateProduct(@PathVariable Integer id, @ModelAttribute("product") Product updatedProduct) {
-        updatedProduct.setId(id); // Đảm bảo ID không thay đổi khi cập nhật
-        productRepository.save(updatedProduct); // Lưu sản phẩm đã cập nhật
-        return "redirect:/product/products"; // Chuyển hướng về danh sách sản phẩm
+    public String updateProduct(@PathVariable Integer id,
+                                @ModelAttribute("product") Product updatedProduct,
+                                @RequestParam("intro") String intro) {
+        updatedProduct.setId(id);
+        updatedProduct.setIntro(intro);
+        productRepository.save(updatedProduct);
+        return "redirect:/product/products";
     }
 
     // Xử lý xóa sản phẩm theo ID
