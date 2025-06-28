@@ -31,7 +31,11 @@ public class MeetingController {
     public String listUserMeetings(Model model, @AuthenticationPrincipal MyAppUser currentUser) {
         List<Meeting> meetings = meetingService.getAllMeetingsForUser(currentUser.getId());
         model.addAttribute("meetings", meetings);
-        return "meetings/list"; // template hiển thị danh sách meeting
+        model.addAttribute("meeting", new Meeting()); // Thêm dòng này để tránh lỗi Thymeleaf
+        model.addAttribute("users", userRepository.findAll().stream()
+                .filter(u -> !u.getRoles().contains("ADMIN"))
+                .collect(Collectors.toList()));
+        return "meetings/list";
     }
 
     // Trang tạo cuộc họp (chỉ Admin)
