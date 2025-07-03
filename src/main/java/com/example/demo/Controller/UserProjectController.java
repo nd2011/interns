@@ -50,8 +50,12 @@ public class UserProjectController {
         if (isAdmin) {
             List<Project> allProjects = projectRepository.findAll();
             model.addAttribute("allProjects", allProjects);
+
+            // ✅ Thêm dòng này để tránh lỗi Thymeleaf form binding
+            model.addAttribute("project", new Project());
         }
 
         return "project/user-project-list";
     }
+
 }

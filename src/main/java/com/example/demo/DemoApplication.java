@@ -26,7 +26,7 @@ public class DemoApplication {
 				admin.setFullname("Administrator");
 				admin.setYear("2000");
 				admin.setEmail("admin@example.com");
-				admin.setPassword(new BCryptPasswordEncoder().encode("123456"));
+				admin.setPassword(new BCryptPasswordEncoder().encode("123"));
 				admin.setJoindate("2025-06-27");
 				admin.setRoles(Set.of("ROLE_ADMIN"));
 
