@@ -4,6 +4,8 @@ import com.example.demo.Entity.MyAppUser;
 import com.example.demo.Entity.Project;
 import com.example.demo.Repository.MyAppUserRepository;
 import com.example.demo.Repository.ProjectRepository;
+import com.example.demo.Service.NotificationService;
+import com.example.demo.Service.ProjectService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-@Controller  // Dùng cho Thymeleaf + API, chú ý trả ResponseEntity cho API
+@Controller
 @RequestMapping("/admin/projects")
-@PreAuthorize("hasRole('ADMIN')")  // Chỉ admin truy cập toàn bộ controller
+@PreAuthorize("hasRole('ADMIN')")
 public class ProjectController {
 
     @Autowired
@@ -26,20 +27,38 @@ public class ProjectController {
     @Autowired
     private MyAppUserRepository userRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private ProjectService projectService;  // nếu bạn có service xử lý business logic
+
     // =========== Thymeleaf View ============
 
     // Hiển thị form tạo project
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("project", new Project());
+        model.addAttribute("users", userRepository.findAll());
         return "project/project-create";
     }
 
-    // Xử lý submit form tạo project
+    // Xử lý submit form tạo project, nhận thêm participantIds (userIds)
     @PostMapping("/create")
-    public String createProject(@ModelAttribute Project project) {
-        Project savedProject = projectRepository.save(project);
-        return "redirect:/admin/projects/" + savedProject.getId() + "/assign";
+    public String createProject(@ModelAttribute Project project,
+                                @RequestParam(value = "participantIds", required = false) Set<Long> participantIds) {
+        if (participantIds == null) participantIds = new HashSet<>();
+
+        // Nếu bạn có service xử lý business logic
+        projectService.createProject(project, participantIds);
+
+        // Tạo thông báo cho các user được giao dự án
+        List<Long> userIds = new ArrayList<>(participantIds);
+        String title = "Bạn vừa được thêm vào dự án: " + project.getName();
+        String link = "/admin/projects/" + project.getId() + "/assign";  // hoặc link phù hợp
+        notificationService.notifyUsers(userIds, title, link);
+
+        return "redirect:/admin/projects/list";
     }
 
     // Hiển thị trang phân công user cho project
@@ -77,6 +96,7 @@ public class ProjectController {
     public String listProjects(Model model) {
         List<Project> projects = projectRepository.findAll();
         model.addAttribute("projects", projects);
+        model.addAttribute("project", new Project());
         return "project/project-list";
     }
 

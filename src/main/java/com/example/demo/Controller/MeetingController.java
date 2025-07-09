@@ -2,8 +2,10 @@ package com.example.demo.Controller;
 
 import com.example.demo.Entity.Meeting;
 import com.example.demo.Entity.MyAppUser;
+import com.example.demo.Repository.MeetingRepository;
 import com.example.demo.Repository.MyAppUserRepository;
 import com.example.demo.Service.MeetingService;
+import com.example.demo.Service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,12 +22,17 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/meetings")
 public class MeetingController {
+    @Autowired
+    private MeetingRepository meetingRepository;
 
     @Autowired
     private MeetingService meetingService;
 
     @Autowired
     private MyAppUserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // Hiển thị danh sách cuộc họp của người dùng hiện tại
     @GetMapping
@@ -38,7 +46,7 @@ public class MeetingController {
 
         // Sửa đoạn này cho chuẩn (phòng trường hợp roles là "ROLE_ADMIN")
         boolean isAdmin = false;
-        if (currentUser != null && currentUser.getRoles() != null) {
+        if (currentUser.getRoles() != null) {
             for (String role : currentUser.getRoles()) {
                 if ("ADMIN".equalsIgnoreCase(role) || "ROLE_ADMIN".equalsIgnoreCase(role)) {
                     isAdmin = true;
@@ -70,6 +78,21 @@ public class MeetingController {
                                 @RequestParam(value = "participantIds", required = false) Set<Long> participantIds) {
         if (participantIds == null) participantIds = new HashSet<>();
         meetingService.createMeeting(meeting, participantIds);
+
+        // Tạo thông báo cho các user được giao nhiệm vụ
+        List<Long> userIds = new ArrayList<>(participantIds);
+        String title = "Bạn vừa được thêm vào cuộc họp: " + meeting.getTitle();
+        String link = "/meetings/view/" + meeting.getId();
+        notificationService.notifyUsers(userIds, title, link);
+
         return "redirect:/meetings";
     }
+    @GetMapping("/view/{id}")
+    public String viewMeeting(@PathVariable Long id, Model model) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Meeting not found!"));
+        model.addAttribute("meeting", meeting);
+        return "meetings/view";
+    }
+
 }

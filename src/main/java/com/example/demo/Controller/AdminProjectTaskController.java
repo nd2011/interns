@@ -3,19 +3,21 @@ package com.example.demo.Controller;
 import com.example.demo.Entity.MyAppUser;
 import com.example.demo.Entity.Project;
 import com.example.demo.Entity.Task;
-import com.example.demo.Repository.MyAppUserRepository;  // Thêm import cho MyAppUserRepository
+import com.example.demo.Repository.MyAppUserRepository;
 import com.example.demo.Service.TaskService;
 import com.example.demo.Repository.ProjectRepository;
+import com.example.demo.Service.NotificationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -28,7 +30,10 @@ public class AdminProjectTaskController {
     private TaskService taskService;
 
     @Autowired
-    private MyAppUserRepository myAppUserRepository;  // Inject MyAppUserRepository
+    private MyAppUserRepository myAppUserRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping("/projects/{projectId}/tasks")
     public String viewProjectTasks(@PathVariable Long projectId, Model model) {
@@ -48,15 +53,23 @@ public class AdminProjectTaskController {
         return "project/project-tasks";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/projects/{projectId}/tasks/create")
     public String createTask(@PathVariable Long projectId,
-                             @RequestParam String name,
-                             @RequestParam String description,
-                             @RequestParam Long assignedUserId,
-                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
+                             @ModelAttribute Task task,
+                             @RequestParam(value = "participantIds", required = false) Set<Long> participantIds,
                              RedirectAttributes redirectAttrs) {
         try {
-            taskService.createTask(projectId, name, description, assignedUserId, deadline);
+            if (participantIds == null) participantIds = new HashSet<>();
+
+            taskService.createTask(projectId, task.getName(), task.getDescription(),
+                    task.getAssignedUser().getId(), task.getDeadline());
+
+            List<Long> userIds = new ArrayList<>(participantIds);
+            String title = "Bạn vừa được giao nhiệm vụ: " + task.getName();
+            String link = "/admin/projects/" + projectId + "/tasks";
+            notificationService.notifyUsers(userIds, title, link);
+
             redirectAttrs.addFlashAttribute("success", "Tạo nhiệm vụ thành công");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", e.getMessage());
@@ -73,16 +86,10 @@ public class AdminProjectTaskController {
 
     @GetMapping("/users/{userId}")
     public String viewUserDetails(@PathVariable Long userId, Model model) {
-        // Lấy người dùng từ cơ sở dữ liệu, gọi phương thức từ đối tượng đã được inject
         MyAppUser user = myAppUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại"));
-
-        // Lấy các dự án mà người dùng đã được phân công
         List<Project> projects = projectRepository.findByAssignedUsers(user);
-
-        // Thêm thông tin vào model
         model.addAttribute("user", user);
         model.addAttribute("projects", projects);
-
-        return "project/user-details";  // Trả về trang hiển thị chi tiết người dùng
+        return "project/user-details";
     }
 }

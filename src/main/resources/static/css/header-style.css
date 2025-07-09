@@ -153,3 +153,73 @@ nav.bg-dark .nav-link.active::after {
     padding: 0.6rem 1rem;
   }
 }
+.notification-bell {
+  position: relative;
+  display: inline-block;
+  margin-right: 20px;
+}
+.bell-icon {
+  font-size: 1.7rem;
+  color: #fff;
+  cursor: pointer;
+  position: relative;
+}
+.badge {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 8px;
+  font-size: 0.88rem;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  background: #fff;
+  min-width: 270px;
+  box-shadow: 0 6px 18px rgba(44,62,80,0.17);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 1010;
+}
+.dropdown-item a {
+  display: block;
+  padding: 11px 20px;
+  color: #222;
+  font-size: 1rem;
+  text-decoration: none;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+.dropdown-item a:hover {
+  background: #f7fafc;
+}
+.dropdown-empty {
+  color: #777;
+  padding: 15px 0;
+  text-align: center;
+  font-size: 1rem;
+}
+.noti-dropdown-menu {
+  display: none !important;
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  background: #fff;
+  min-width: 260px;
+  box-shadow: 0 6px 18px rgba(44,62,80,0.17);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 1010;
+}
+.noti-dropdown-menu.show {
+  display: block !important;
+}
+
