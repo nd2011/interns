@@ -31,12 +31,26 @@ public class MeetingController {
     public String listUserMeetings(Model model, @AuthenticationPrincipal MyAppUser currentUser) {
         List<Meeting> meetings = meetingService.getAllMeetingsForUser(currentUser.getId());
         model.addAttribute("meetings", meetings);
-        model.addAttribute("meeting", new Meeting()); // Thêm dòng này để tránh lỗi Thymeleaf
+        model.addAttribute("meeting", new Meeting());
         model.addAttribute("users", userRepository.findAll().stream()
-                .filter(u -> !u.getRoles().contains("ADMIN"))
+                .filter(u -> !u.getRoles().contains("ADMIN") && !u.getRoles().contains("ROLE_ADMIN"))
                 .collect(Collectors.toList()));
+
+        // Sửa đoạn này cho chuẩn (phòng trường hợp roles là "ROLE_ADMIN")
+        boolean isAdmin = false;
+        if (currentUser != null && currentUser.getRoles() != null) {
+            for (String role : currentUser.getRoles()) {
+                if ("ADMIN".equalsIgnoreCase(role) || "ROLE_ADMIN".equalsIgnoreCase(role)) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+        model.addAttribute("isAdmin", isAdmin);
+
         return "meetings/list";
     }
+
 
     // Trang tạo cuộc họp (chỉ Admin)
     @PreAuthorize("hasRole('ADMIN')")
