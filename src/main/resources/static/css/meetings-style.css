@@ -198,3 +198,61 @@ input:not(:placeholder-shown) ~ label {
     text-decoration: underline;
     color: #a8a8a8;
 }
+.meeting-detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 70vh;
+  padding: 40px 0;
+  background: transparent;
+}
+
+.meeting-detail-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 28px rgba(44, 62, 80, 0.13);
+  padding: 38px 38px 30px 38px;
+  max-width: 480px;
+  width: 100%;
+  margin-top: 20px;
+  transition: box-shadow 0.3s;
+  border: 1.5px solid #e0e4e8;
+  font-size: 1.07rem;
+}
+
+.meeting-detail-card h2 {
+  color: #007bff;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.meeting-detail-card p {
+  margin: 16px 0;
+  color: #222;
+  font-size: 1.08rem;
+}
+
+.meeting-detail-card strong {
+  color: #2c3e50;
+}
+
+.btn-back {
+  display: inline-block;
+  margin-top: 25px;
+  background: #f4f6fb;
+  color: #007bff;
+  border: 1.3px solid #d4e0ed;
+  border-radius: 8px;
+  padding: 10px 26px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.23s;
+}
+.btn-back:hover {
+  background: #eaf3fb;
+  color: #0056b3;
+  border-color: #b7d0ee;
+  text-decoration: none;
+}

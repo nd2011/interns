@@ -222,4 +222,16 @@ nav.bg-dark .nav-link.active::after {
 .noti-dropdown-menu.show {
   display: block !important;
 }
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #e74c3c;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.notification-item.unread a {
+  font-weight: bold;
+}
 

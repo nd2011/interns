@@ -3,6 +3,7 @@
 <head>
   <title>Header</title>
   <link rel="stylesheet" href="/css/header-style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <header th:fragment="header" class="bg-success text-white py-3 shadow">
@@ -12,28 +13,34 @@
     </a>
     <div class="d-flex align-items-center gap-3">
       <span th:text="'Xin chào: ' + ${username}" class="fw-bold"></span>
+      <!-- Notification bell -->
       <div class="notification-bell position-relative">
         <span class="bell-icon" id="notificationBell" style="cursor:pointer;">
             <i class="fa fa-bell"></i>
-            <span th:if="${notifications != null and notifications.size() > 0}"
+            <span th:if="${notifications != null and notifications.?[!read].size() > 0}"
                   class="badge bg-danger position-absolute top-0 start-100 translate-middle"
                   style="font-size:0.89rem; min-width:24px;"
-                  th:text="${notifications.size()}"></span>
+                  id="notificationBadge"
+                  th:text="${notifications.?[!read].size()}"></span>
         </span>
         <div id="notificationDropdown" class="noti-dropdown-menu p-0" style="right:0; left:auto; min-width:250px;">
           <div th:if="${notifications == null or notifications.size() == 0}"
                class="dropdown-empty text-center text-muted p-3">
             Không có nhiệm vụ mới
           </div>
-          <div th:each="noti : ${notifications}" class="dropdown-item px-3 py-2 border-bottom">
+          <div th:each="noti : ${notifications}"
+               th:class="'dropdown-item px-3 py-2 border-bottom notification-item' + (${noti.read} ? '' : ' unread')"
+               th:data-id="${noti.id}">
             <a th:href="${noti.link}" th:text="${noti.title}" class="text-dark text-decoration-none"></a>
+            <span th:if="${!noti.read}" class="dot ms-2"></span>
           </div>
         </div>
       </div>
+      <!-- End notification bell -->
       <a href="/logout" class="btn btn-danger btn-sm">Đăng xuất</a>
     </div>
   </div>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </header>
+
 </body>
 </html>

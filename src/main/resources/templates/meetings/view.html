@@ -2,16 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Chi tiết cuộc họp</title>
-  <link rel="stylesheet" href="/css/meetings-style.css" />
+  <script src="/js/notification-dropdown.js"></script>
+  <link rel="stylesheet" href="/css/meetings-style.css">
+  <link rel="stylesheet" href="/css/index-style.css">
+  <link rel="stylesheet" href="/css/header-style.css">
 </head>
 <body>
-<header th:replace="fragments/header :: header"></header>
-<main class="container">
-  <h2 th:text="'Tiêu đề: ' + ${meeting.title}">Tiêu đề cuộc họp</h2>
-  <p><strong>Mô tả:</strong> <span th:text="${meeting.description}"></span></p>
-  <p><strong>Bắt đầu:</strong> <span th:text="${#temporals.format(meeting.startTime, 'dd/MM/yyyy HH:mm')}"></span></p>
-  <p><strong>Kết thúc:</strong> <span th:text="${#temporals.format(meeting.endTime, 'dd/MM/yyyy HH:mm')}"></span></p>
-  <a href="/meetings" class="btn btn-secondary mt-3">Quay lại danh sách</a>
+<header>
+<div class="header-bar" th:replace="fragments/header :: header"></div>
+<div class="navbar-bar" th:replace="fragments/navbar :: navbar"></div>
+</header>
+<main class="meeting-detail-container">
+  <div class="meeting-detail-card">
+    <h2 th:text="${meeting.title}">Tiêu đề cuộc họp</h2>
+    <p><strong>Mô tả:</strong> <span th:text="${meeting.description}"></span></p>
+    <p><strong>Bắt đầu:</strong> <span th:text="${#temporals.format(meeting.startTime, 'dd/MM/yyyy HH:mm')}"></span></p>
+    <p><strong>Kết thúc:</strong> <span th:text="${#temporals.format(meeting.endTime, 'dd/MM/yyyy HH:mm')}"></span></p>
+    <a href="/meetings" class="btn-back">← Quay lại danh sách</a>
+  </div>
 </main>
+
 </body>
 </html>
