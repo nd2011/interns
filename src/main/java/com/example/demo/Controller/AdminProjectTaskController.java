@@ -96,4 +96,29 @@ public class AdminProjectTaskController {
         model.addAttribute("projects", projects);
         return "project/user-details";
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/tasks/{id}/reject")
+    public String rejectTask(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        try {
+            taskService.rejectTask(id);
+            redirectAttrs.addFlashAttribute("success", "Nhiệm vụ đã bị từ chối!");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+        }
+        Long projectId = taskService.findProjectIdByTaskId(id);
+        return "redirect:/admin/projects/" + projectId + "/tasks";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/tasks/{id}/toggle-status")
+    public String toggleTaskStatus(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        try {
+            taskService.toggleStatus(id); // Nhớ phải có hàm này ở TaskService!
+            redirectAttrs.addFlashAttribute("success", "Cập nhật trạng thái thành công!");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+        }
+        Long projectId = taskService.findProjectIdByTaskId(id); // để redirect về đúng trang project
+        return "redirect:/admin/projects/" + projectId + "/tasks";
+    }
+
 }

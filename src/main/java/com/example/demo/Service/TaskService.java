@@ -49,9 +49,11 @@ public class TaskService {
     }
 
     public void toggleStatus(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task không tồn tại"));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task không tồn tại"));
+        // Chỉ toggle giữa DONE và INPROGRESS, hoặc tuỳ bạn muốn
         if (task.getStatus() == Task.Status.DONE) {
-            task.setStatus(Task.Status.PENDING);
+            task.setStatus(Task.Status.INPROGRESS);
         } else {
             task.setStatus(Task.Status.DONE);
         }
@@ -74,5 +76,16 @@ public class TaskService {
     public List<Task> getTasksByUser(MyAppUser user) {
         return taskRepository.findByAssignedUser(user);
     }
+    public void rejectTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task không tồn tại"));
+        task.setStatus(Task.Status.REJECTED);
+        taskRepository.save(task);
+    }
 
+    public Long findProjectIdByTaskId(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task không tồn tại"));
+        return task.getProject().getId();
+    }
 }

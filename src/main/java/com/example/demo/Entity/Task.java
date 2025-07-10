@@ -30,8 +30,10 @@ public class Task {
 
     public enum Status {
         PENDING,
-        DONE
-    }
+        DONE,
+        REJECTED,
+        INPROGRESS
+        }
 
     // Getters & Setters
     public Long getId() { return id; }

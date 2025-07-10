@@ -51,11 +51,20 @@
         <td th:text="${task.deadlineFormatted}"></td>
         <td th:text="${task.status}"></td>
         <td>
-            <form th:action="@{'/admin/tasks/' + ${task.id} + '/toggle-status'}" method="post" style="margin:0;">
+            <form th:action="@{'/admin/tasks/' + ${task.id} + '/toggle-status'}" method="post" style="display:inline;">
                 <button type="submit"
-                        th:text="${task.status == 'DONE' ? 'Đánh dấu chưa hoàn thành' : 'Đánh dấu hoàn thành'}"></button>
+                        th:text="${task.status == 'DONE' ? 'Đánh dấu chưa hoàn thành' : 'hoàn thành'}"></button>
+            </form>
+            <form th:action="@{'/admin/tasks/' + ${task.id} + '/reject'}" method="post" style="display:inline; margin-left:5px;">
+                <button type="submit"
+                        th:disabled="${task.status == 'REJECTED'}"
+                        style="background-color:#e53935; color:white; border:none; padding:3px 10px; border-radius:5px;"
+                        onclick="return confirm('Bạn chắc chắn muốn từ chối nhiệm vụ này?');">
+                    Từ chối
+                </button>
             </form>
         </td>
+
     </tr>
     </tbody>
 </table>
