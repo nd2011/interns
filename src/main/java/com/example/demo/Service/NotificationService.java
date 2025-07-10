@@ -28,4 +28,12 @@ public class NotificationService {
     public List<Notification> getUnreadNotifications(Long userId) {
         return notificationRepository.findByUserIdAndReadFalse(userId);
     }
+    public void markAllAsRead(Long userId) {
+        List<Notification> list = notificationRepository.findByUserIdAndReadFalse(userId);
+        for (Notification noti : list) {
+            noti.setRead(true);
+        }
+        notificationRepository.saveAll(list);
+    }
+
 }

@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
   if(bell && dropdown) {
       bell.addEventListener('click', function(e){
           dropdown.classList.toggle('show');
+          // Gọi backend để mark all as read
+          fetch('/notifications/mark-all-read', { method: 'POST' }).then(() => {
+              const badge = document.getElementById('notificationBadge');
+              if(badge) badge.style.display = 'none';
+          });
           e.stopPropagation();
       });
       document.addEventListener('click', function() {
