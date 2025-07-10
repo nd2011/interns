@@ -63,8 +63,11 @@
                                 <input type="text" class="form-control" th:field="*{name}" required />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Mô tả:</label>
-                                <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+                                <label>Phân công user:</label>
+                                <select class="form-select" name="participantIds" multiple required>
+                                    <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.fullname}"></option>
+                                </select>
+                                <div class="form-text">Giữ Ctrl hoặc Command để chọn nhiều người.</div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -82,7 +85,6 @@
             <tr>
                 <th>ID</th>
                 <th>Tên dự án</th>
-                <th>Mô tả</th>
                 <th>Người tham gia</th>
             </tr>
             </thead>
@@ -90,7 +92,6 @@
             <tr th:each="project : ${allProjects}">
                 <td th:text="${project.id}"></td>
                 <td th:text="${project.name}"></td>
-                <td th:text="${project.description}"></td>
                 <td>
                     <ul class="mb-0">
                         <li th:each="user : ${project.assignedUsers}" th:text="${user.fullname}"></li>

@@ -64,8 +64,11 @@
                         <input type="text" class="form-control" th:field="*{name}" required />
                     </div>
                     <div class="mb-3">
-                        <label>Mô tả:</label>
-                        <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+                        <label>Phân công user:</label>
+                        <select class="form-select" name="participantIds" multiple required>
+                            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.fullname}"></option>
+                        </select>
+                        <div class="form-text">Giữ Ctrl hoặc Command để chọn nhiều người.</div>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -53,6 +53,7 @@ public class UserProjectController {
 
             // ✅ Thêm dòng này để tránh lỗi Thymeleaf form binding
             model.addAttribute("project", new Project());
+            model.addAttribute("users", userRepository.findAll());
         }
 
         return "project/user-project-list";

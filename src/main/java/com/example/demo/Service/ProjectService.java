@@ -18,12 +18,12 @@ public class ProjectService {
     @Autowired
     private MyAppUserRepository userRepository;
 
-    // Hàm tạo project và gán user (bạn có thể điều chỉnh logic này tùy nhu cầu)
     public Project createProject(Project project, Set<Long> participantIds) {
         if (participantIds != null && !participantIds.isEmpty()) {
             List<MyAppUser> users = userRepository.findAllById(participantIds);
-            project.setAssignedUsers((Set<MyAppUser>) users); // Chú ý đúng tên field assignedUsers của entity Project
+            project.setAssignedUsers(new java.util.HashSet<>(users));
         }
         return projectRepository.save(project);
     }
 }
+

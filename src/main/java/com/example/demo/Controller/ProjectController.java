@@ -49,17 +49,17 @@ public class ProjectController {
                                 @RequestParam(value = "participantIds", required = false) Set<Long> participantIds) {
         if (participantIds == null) participantIds = new HashSet<>();
 
-        // Nếu bạn có service xử lý business logic
+        // Giao cho Service xử lý hết!
         projectService.createProject(project, participantIds);
 
-        // Tạo thông báo cho các user được giao dự án
-        List<Long> userIds = new ArrayList<>(participantIds);
+        // Tạo thông báo cho các user được giao dự án (nên đặt sau khi project đã lưu)
         String title = "Bạn vừa được thêm vào dự án: " + project.getName();
-        String link = "/admin/projects/" + project.getId() + "/assign";  // hoặc link phù hợp
-        notificationService.notifyUsers(userIds, title, link);
+        String link = "/user/projects";
+        notificationService.notifyUsers(new ArrayList<>(participantIds), title, link);
 
         return "redirect:/admin/projects/list";
     }
+
 
     // Hiển thị trang phân công user cho project
     @GetMapping("/{projectId}/assign")
@@ -97,6 +97,7 @@ public class ProjectController {
         List<Project> projects = projectRepository.findAll();
         model.addAttribute("projects", projects);
         model.addAttribute("project", new Project());
+        model.addAttribute("users", userRepository.findAll());
         return "project/project-list";
     }
 

@@ -84,6 +84,10 @@ public class AdminProjectTaskController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", e.getMessage());
         }
+        List<Long> userIds = new ArrayList<>(participantIds);
+        String title = "Bạn vừa được giao nhiệm vụ mới trong dự án: " + projectRepository.findById(projectId).get().getName();
+        String link = "/admin/projects/" + projectId + "/tasks";
+        notificationService.notifyUsers(userIds, title, link);
         return "redirect:/admin/projects/" + projectId + "/tasks";
     }
 
