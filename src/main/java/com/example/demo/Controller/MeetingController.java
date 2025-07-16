@@ -13,10 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -93,6 +90,35 @@ public class MeetingController {
                 .orElseThrow(() -> new IllegalArgumentException("Meeting not found!"));
         model.addAttribute("meeting", meeting);
         return "meetings/view";
+    }
+    @PostMapping(value = "/create-ajax", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> createMeetingAjax(
+            @ModelAttribute Meeting meeting,
+            @RequestParam(value = "participantIds", required = false) Set<Long> participantIds) {
+
+        Map<String, Object> result = new HashMap<>();
+        try {
+            if (participantIds == null) participantIds = new HashSet<>();
+            meetingService.createMeeting(meeting, participantIds);
+
+            // Gửi notification như cũ
+
+            // Tạo meetingDto chỉ trả về trường cần thiết, không trả về object Meeting
+            Map<String, Object> meetingDto = new HashMap<>();
+            meetingDto.put("id", meeting.getId());
+            meetingDto.put("title", meeting.getTitle());
+            meetingDto.put("description", meeting.getDescription());
+            meetingDto.put("startTime", meeting.getStartTime());
+            meetingDto.put("endTime", meeting.getEndTime());
+
+            result.put("success", true);
+            result.put("meeting", meetingDto); // CHỈ TRẢ MAP ĐƠN GIẢN!
+        } catch (Exception ex) {
+            result.put("success", false);
+            result.put("message", ex.getMessage());
+        }
+        return result;
     }
 
 }

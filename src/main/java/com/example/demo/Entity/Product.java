@@ -36,7 +36,8 @@ public class Product {
     @Column
     private LocalDate expiryDate;
 
-    @Column
+
+    @Column(columnDefinition = "TEXT")
     private String image;
 
     @Column(name = "created_at")

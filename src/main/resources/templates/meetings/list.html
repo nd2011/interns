@@ -4,10 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh sách cuộc họp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/notification-dropdown.js"></script>
     <link rel="stylesheet" href="/css/meetings-style.css">
     <link rel="stylesheet" href="/css/index-style.css">
     <link rel="stylesheet" href="/css/header-style.css">
+    <style>
+        .modal-lg { max-width: 66vw; min-width: 420px; }
+        .modal-content { border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.12); padding: 8px 16px 16px 16px; }
+        .inputbox { position: relative; margin-bottom: 18px; }
+        .inputbox input[type="text"], .inputbox input[type="datetime-local"] {
+            width: 100%; padding: 14px 12px 14px 14px; border: 1.5px solid #cce;
+            border-radius: 12px; background: #fff; outline: none; transition: border-color 0.2s;
+        }
+        .inputbox input:focus { border-color: #007bff; }
+        .inputbox label {
+            position: absolute; left: 18px; top: 14px; background: #fff; padding: 0 3px;
+            color: #888; font-size: 1rem; pointer-events: none; transition: 0.15s;
+        }
+        .inputbox input:focus + label, .inputbox input:not(:placeholder-shown) + label {
+            top: -11px; left: 10px; background: #fff; color: #007bff; font-size: 0.88rem;
+        }
+        .btn-add {
+            background: #007bff; color: #fff; border-radius: 10px; padding: 8px 20px;
+            border: none; font-weight: 600; box-shadow: 0 2px 8px #007bff22; transition: background 0.18s;
+        }
+        .btn-add:hover { background: #0056b3; }
+        #userList label { color: #222 !important; }
+        @media (max-width: 900px) { .modal-lg { max-width: 96vw; } }
+    </style>
 </head>
 <body>
 <header>
@@ -17,10 +43,10 @@
 <section>
     <h1>Danh sách cuộc họp</h1>
     <input id="searchMeeting" type="text" placeholder="Tìm kiếm cuộc họp..." style="width:100%;margin-bottom:18px;padding:10px 15px;border-radius:12px;border:1px solid #cce;">
-    <a th:if="${isAdmin}" href="/meetings/create" class="btn-add">
+    <button th:if="${isAdmin}" type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#createMeetingModal">
         + Tạo cuộc họp mới
-    </a>
-    <table class="meeting-table" id="meetingTable">
+    </button>
+    <table class="meeting-table table table-bordered" id="meetingTable">
         <thead>
         <tr>
             <th>Tiêu đề</th>
@@ -30,14 +56,15 @@
             <th>Hành động</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="meetingTableBody">
+        <!-- Thymeleaf: render ở lần đầu, khi reload sẽ dùng JS update lại -->
         <tr th:each="meeting : ${meetings}">
             <td th:text="${meeting.title}">Tiêu đề</td>
             <td th:text="${meeting.description}">Mô tả</td>
             <td th:text="${#temporals.format(meeting.startTime, 'dd/MM/yyyy HH:mm')}">01/01/2025 08:00</td>
             <td th:text="${#temporals.format(meeting.endTime, 'dd/MM/yyyy HH:mm')}">01/01/2025 10:00</td>
             <td>
-                <a th:href="@{'/meetings/view/' + ${meeting.id}}" class="btn-view">Xem</a>
+                <a th:href="@{'/meetings/view/' + ${meeting.id}}" class="btn-view btn btn-outline-primary btn-sm">Xem</a>
             </td>
         </tr>
         <tr th:if="${#lists.isEmpty(meetings)}">
@@ -46,6 +73,123 @@
         </tbody>
     </table>
 </section>
-<script src="/js/meetings-list.js"></script>
+<!-- Modal tạo cuộc họp mới -->
+<div class="modal fade" id="createMeetingModal" tabindex="-1" aria-labelledby="createMeetingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createMeetingLabel">Tạo cuộc họp mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Alert lỗi sẽ render ở đây -->
+                <div id="formErrorAlert" class="alert alert-danger d-none"></div>
+                <form id="createMeetingForm" autocomplete="off">
+                    <div class="inputbox">
+                        <input type="text" id="title" name="title" required placeholder=" ">
+                        <label for="title">Tiêu đề</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" id="description" name="description" required placeholder=" ">
+                        <label for="description">Mô tả</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="datetime-local" id="startTime" name="startTime" required placeholder=" ">
+                        <label for="startTime">Thời gian bắt đầu</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="datetime-local" id="endTime" name="endTime" required placeholder=" ">
+                        <label for="endTime">Thời gian kết thúc</label>
+                    </div>
+                    <div style="margin:20px 0 0 0;">
+                        <label for="searchUser" style="font-size: 1rem;">Chọn người tham gia:</label>
+                        <input type="text" id="searchUser" placeholder="Tìm người..." onkeyup="filterUsers()" style="width:100%; padding:8px; border-radius:8px; margin:8px 0;">
+                        <div id="userList" style="max-height:120px; overflow-y:auto; background:rgba(255,255,255,0.1); border-radius:12px; border:1px solid #eee; padding:10px;">
+                            <!-- Thymeleaf loop user phía server-side (bạn giữ như sau) -->
+                            <div th:each="user : ${users}" th:id="${'userDiv_'+user.id}" style="margin-bottom:4px;">
+                                <input type="checkbox" th:id="${'user_'+user.id}" name="participantIds" th:value="${user.id}">
+                                <label th:for="${'user_'+user.id}" th:text="${user.username}">Tên user</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-add" style="margin-top:18px;">Tạo cuộc họp</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function filterUsers() {
+        var input = document.getElementById('searchUser');
+        var filter = input.value.toUpperCase();
+        var container = document.getElementById('userList');
+        var divs = container.getElementsByTagName('div');
+        for (var i = 0; i < divs.length; i++) {
+            var label = divs[i].getElementsByTagName("label")[0];
+            if (label) {
+                var txtValue = label.textContent || label.innerText;
+                divs[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+    }
+
+    // Xử lý submit form tạo cuộc họp AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('createMeetingForm');
+        const modal = new bootstrap.Modal(document.getElementById('createMeetingModal'));
+        const errorAlert = document.getElementById('formErrorAlert');
+       form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            errorAlert.classList.add('d-none');
+            const formData = new FormData(form);
+            fetch('/meetings/create-ajax', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if(result.success) {
+                    addMeetingToTable(result.meeting);
+                    modal.hide();
+                    form.reset();
+                } else {
+                    errorAlert.innerText = result.message || 'Đã có lỗi, vui lòng kiểm tra lại!';
+                    errorAlert.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                errorAlert.innerText = 'Không thể gửi dữ liệu, kiểm tra lại mạng hoặc liên hệ admin!';
+                errorAlert.classList.remove('d-none');
+            });
+        });
+    });
+
+    // Hàm thêm row mới vào bảng, hoặc reload list tùy backend
+    function addMeetingToTable(meeting) {
+        const tbody = document.getElementById('meetingTableBody');
+        // Tạo hàng mới, update DOM
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${meeting.title}</td>
+            <td>${meeting.description}</td>
+            <td>${formatDateTime(meeting.startTime)}</td>
+            <td>${formatDateTime(meeting.endTime)}</td>
+            <td>
+                <a href="/meetings/view/${meeting.id}" class="btn-view btn btn-outline-primary btn-sm">Xem</a>
+            </td>
+        `;
+        // Nếu chưa có cuộc họp nào (có dòng "Chưa có cuộc họp nào!") thì xóa dòng đó đi
+        const noMeetingRow = tbody.querySelector('tr td[colspan]');
+        if(noMeetingRow) tbody.removeChild(noMeetingRow.parentElement);
+        tbody.prepend(tr);
+    }
+    // Hàm format lại datetime (backend trả ISO)
+    function formatDateTime(dt) {
+        if (!dt) return '';
+        const d = new Date(dt);
+        if(isNaN(d.getTime())) return dt; // Nếu backend trả text sẵn
+        return d.toLocaleString('vi-VN', { hour12: false }).replace(',', '');
+    }
+</script>
 </body>
 </html>
