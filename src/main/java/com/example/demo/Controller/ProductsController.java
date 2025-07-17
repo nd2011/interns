@@ -4,12 +4,15 @@ import com.example.demo.Entity.Product;
 import com.example.demo.Repository.ProductRepository;
 import com.example.demo.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,13 +33,19 @@ public class ProductsController {
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("products",  productService.findAll());
+    public String index(Model model, @RequestParam(defaultValue = "0") int page) {
+        int pageSize = 4; // Số sản phẩm mỗi trang
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Product> productsPage = productService.findAll(pageable);
+        model.addAttribute("products", productsPage);
         return "product/products";
     }
     @GetMapping("/show")
-    public String showproductuser(Model model) {
-        model.addAttribute("products",  productService.findAll());
+    public String showproductuser(Model model, @RequestParam(defaultValue = "0") int page) {
+        int pageSize = 4; // Số sản phẩm mỗi trang
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Product> productsPage = productService.findAll(pageable);
+        model.addAttribute("products", productsPage);
         return "product/product-list-user";
     }
 

@@ -85,3 +85,25 @@ td:focus {
         font-size: 14px; /* Giảm kích thước font cho bảng */
     }
 }
+.pagination-wrapper {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination {
+  margin-bottom: 0;
+}
+
+.page-item.active .page-link {
+  background-color: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+}
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+

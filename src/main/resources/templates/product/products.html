@@ -76,6 +76,26 @@
 
   <a th:href="@{/product/products/add}" class="btn btn-add">Thêm sản phẩm mới</a>
 </main>
+<!-- Phân trang -->
+<div class="pagination-wrapper" th:if="${products.totalPages > 1}">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" th:classappend="${products.first} ? 'disabled'">
+      <a class="page-link" th:href="@{'/product/products?page=' + ${products.number - 1}}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+        class="page-item"
+        th:classappend="${i == products.number} ? 'active'">
+      <a class="page-link" th:href="@{'/product/products?page=' + ${i}}" th:text="${i + 1}"></a>
+    </li>
+    <li class="page-item" th:classappend="${products.last} ? 'disabled'">
+      <a class="page-link" th:href="@{'/product/products?page=' + ${products.number + 1}}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</div>
 
 </body>
 </html>
