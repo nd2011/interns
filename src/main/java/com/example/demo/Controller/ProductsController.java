@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/product/products")
@@ -102,4 +104,30 @@ public class ProductsController {
         }
         return "redirect:/product/products"; // Chuyển hướng về danh sách sau khi xóa
     }
+    @PostMapping(value = "/add-ajax", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> addProductAjax(@ModelAttribute Product product) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Product saved = productService.save(product); // hoặc repository.save(product)
+            Map<String, Object> p = new HashMap<>();
+            p.put("id", saved.getId());
+            p.put("name", saved.getName());
+            p.put("description", saved.getDescription());
+            p.put("costPrice", saved.getCostPrice());
+            p.put("price", saved.getPrice());
+            p.put("quantity", saved.getQuantity());
+            p.put("manufactureDate", saved.getManufactureDate());
+            p.put("expiryDate", saved.getExpiryDate());
+            p.put("intro", saved.getIntro());
+            p.put("image", saved.getImage());
+            result.put("success", true);
+            result.put("product", p);
+        } catch (Exception ex) {
+            result.put("success", false);
+            result.put("message", ex.getMessage());
+        }
+        return result;
+    }
+
 }

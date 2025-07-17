@@ -52,7 +52,7 @@ public class Product {
         this.intro = intro;
     }
 
-    @Column(columnDefinition = "Text")
+    @Column(columnDefinition = "TEXT")
     private String intro;
 
     // Getters and setters

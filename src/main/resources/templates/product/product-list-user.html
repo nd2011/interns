@@ -11,14 +11,28 @@
 
     <style>
         .product-card { cursor: pointer; }
+        body {
+    margin-left: 240px;
+}
+@media (max-width: 900px) {
+    body {
+        margin-left: 0;
+    }
+    .sidebar-main {
+        position: static;
+        width: 100%;
+        min-height: unset;
+    }
+}
+
     </style>
 </head>
-<body>
-
 <header>
-    <div th:replace="fragments/header :: header"></div>
-    <div th:replace="fragments/navbar :: navbar"></div>
+    <div class="col-auto px-0">
+        <div th:replace="fragments/sidebar :: sidebar"></div>
+    </div>
 </header>
+<body>
 
 <main class="product-list-container">
     <a th:href="@{/index}" class="btn btn-add">Về trang chủ</a>

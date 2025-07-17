@@ -258,4 +258,37 @@ nav.bg-dark .nav-link.active::after {
     color: #fff;
     text-decoration: none !important;  /* Đảm bảo hover không bị underline */
 }
-
+.sidebar-main {
+    background: linear-gradient(135deg, #2c3e50 65%, #4CAF50);
+    min-height: 100vh;
+    color: #fff;
+        width: 240px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        min-height: 100vh;
+        z-index: 1050;
+}
+.sidebar-main .nav-link {
+    color: #eee !important;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    padding: 10px 18px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+}
+.sidebar-main .nav-link.active,
+.sidebar-main .nav-link:hover {
+    background: #00adb5 !important;
+    color: #fff !important;
+}
+.btn-logout {
+    border-radius: 20px !important;
+    font-size: 1rem !important;
+    padding: 6px 24px !important;
+    margin-top: 8px;
+    background: #e74c3c !important;
+}
+body {
+margin-left: 240px;
+}

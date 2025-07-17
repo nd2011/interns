@@ -37,8 +37,9 @@
 </head>
 <body>
 <header>
-    <div class="header-bar" th:replace="fragments/header :: header"></div>
-    <div class="navbar-bar" th:replace="fragments/navbar :: navbar"></div>
+    <div class="col-auto px-0">
+        <div th:replace="fragments/sidebar :: sidebar"></div>
+    </div>
 </header>
 <section>
     <h1>Danh sách cuộc họp</h1>

@@ -16,8 +16,9 @@
 
 <body>
 <header>
-    <div th:replace="fragments/header :: header"></div>
-    <div th:replace="fragments/navbar :: navbar"></div>
+    <div class="col-auto px-0">
+        <div th:replace="fragments/sidebar :: sidebar"></div>
+    </div>
 </header>
 
 <div class="container mt-4">

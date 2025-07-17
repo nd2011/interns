@@ -7,13 +7,17 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/notification-dropdown.js"></script>
+<!--  <script src="/js/modalProduct.js"></script>-->
+  <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
   <link rel="stylesheet" th:href="@{/css/product-style.css}" />
   <link rel="stylesheet" href="/css/index-style.css">
   <link rel="stylesheet" href="/css/header-style.css">
 </head>
 <header>
-  <div th:replace="fragments/header :: header"></div>
-  <div th:replace="fragments/navbar :: navbar"></div>
+  <div class="col-auto px-0">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+  </div>
 </header>
 <body>
 
@@ -74,7 +78,9 @@
 <!--    </ul>-->
 <!--  </div>-->
 
-  <a th:href="@{/product/products/add}" class="btn btn-add">Thêm sản phẩm mới</a>
+  <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addProductModal">
+    Thêm sản phẩm mới
+  </button>
 </main>
 <!-- Phân trang -->
 <div class="pagination-wrapper" th:if="${products.totalPages > 1}">
@@ -96,6 +102,63 @@
     </li>
   </ul>
 </div>
+<!-- Modal Thêm Sản Phẩm -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addProductLabel">Thêm Sản Phẩm Mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <div id="formErrorAlertProduct" class="alert alert-danger d-none"></div>
+        <form id="addProductForm" autocomplete="off">
+          <div class="mb-4">
+            <label for="name" class="form-label">Tên Sản Phẩm</label>
+            <input type="text" class="form-control" id="name" name="name" required />
+          </div>
+          <div class="mb-4">
+            <label for="intro" class="form-label">Bài viết giới thiệu</label>
+            <textarea id="intro" name="intro" class="form-control" rows="6"></textarea>
+          </div>
+          <div class="mb-4">
+            <label for="description" class="form-label">Mô Tả</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+          </div>
+          <div class="mb-4">
+            <label for="costPrice" class="form-label">Giá</label>
+            <input type="number" class="form-control" id="costPrice" name="costPrice" required />
+          </div>
+          <div class="mb-4">
+            <label for="price" class="form-label">Giá Vốn</label>
+            <input type="number" class="form-control" id="price" name="price" required />
+          </div>
+          <div class="mb-4">
+            <label for="quantity" class="form-label">Số Lượng</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required />
+          </div>
+          <div class="mb-4">
+            <label for="manufactureDate" class="form-label">Ngày Sản Xuất</label>
+            <input type="date" class="form-control" id="manufactureDate" name="manufactureDate" required />
+          </div>
+          <div class="mb-4">
+            <label for="expiryDate" class="form-label">Ngày Hết Hạn</label>
+            <input type="date" class="form-control" id="expiryDate" name="expiryDate" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Đường dẫn hình ảnh</label>
+            <input type="text" name="image" class="form-control" placeholder="Nhập đường dẫn hình ảnh" required />
+          </div>
+          <div class="d-flex gap-3 justify-content-center">
+            <button type="submit" class="btn btn-primary" style="min-width: 120px;">Lưu</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="min-width: 120px;">Hủy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
+
