@@ -44,7 +44,7 @@ public class ProductsController {
     }
     @GetMapping("/show")
     public String showproductuser(Model model, @RequestParam(defaultValue = "0") int page) {
-        int pageSize = 4; // Số sản phẩm mỗi trang
+        int pageSize = 6; // Số sản phẩm mỗi trang
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Product> productsPage = productService.findAll(pageable);
         model.addAttribute("products", productsPage);
