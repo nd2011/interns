@@ -40,7 +40,7 @@ public class UserProjectController {
         }
         MyAppUser user = userOpt.get();
 
-        Set<Project> projects = user.getProjects();
+        List<Project> projects = user.getProjects();
         model.addAttribute("projects", projects);
 
         boolean isAdmin = auth.getAuthorities().stream()

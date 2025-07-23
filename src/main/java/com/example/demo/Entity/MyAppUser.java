@@ -3,6 +3,7 @@ package com.example.demo.Entity;
 import jakarta.persistence.*;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,17 +28,17 @@ public class MyAppUser implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
 
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
     @ManyToMany(mappedBy = "assignedUsers", fetch = FetchType.LAZY)
-    private Set<Project> projects;
-    // Getters và Setters
+    private List<Project> projects;
+
+    @ManyToMany(mappedBy = "participants", fetch = FetchType.LAZY)
+    private List<Meeting> meetings;
+
+    @OneToMany(mappedBy = "assignedUser", fetch = FetchType.LAZY)
+    private List<Task> tasks;
+
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -90,7 +91,31 @@ public class MyAppUser implements UserDetails {
         this.roles = roles;
     }
 
-    // Các method của UserDetails
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+
+    public List<Meeting> getMeetings() {
+        return meetings;
+    }
+
+    public void setMeetings(List<Meeting> meetings) {
+        this.meetings = meetings;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    // UserDetails interface methods
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

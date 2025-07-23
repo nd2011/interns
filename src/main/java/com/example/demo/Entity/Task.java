@@ -33,34 +33,69 @@ public class Task {
         DONE,
         REJECTED,
         INPROGRESS
-        }
+    }
 
-    // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
     public void setDescription(String description) { this.description = description; }
-    public Project getProject() { return project; }
-    public void setProject(Project project) { this.project = project; }
 
-    // Thêm phương thức getter cho tên của project
-    public String getProjectName() {
-        if (project != null) {
-            return project.getName();  // Giả sử Project có phương thức getName()
-        }
-        return "Chưa có dự án";
+    public Project getProject() {
+        return project;
     }
 
-    public MyAppUser getAssignedUser() { return assignedUser; }
-    public void setAssignedUser(MyAppUser assignedUser) { this.assignedUser = assignedUser; }
-    public LocalDate getDeadline() { return deadline; }
-    public String getDeadlineFormatted() {
-        if (deadline == null) return "Chưa đặt hạn";
-        return deadline.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    public void setProject(Project project) {
+        this.project = project;
     }
-    public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
+
+    public MyAppUser getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(MyAppUser assignedUser) {
+        this.assignedUser = assignedUser;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
+
+    // Additional helper methods
+
+    public String getProjectName() {
+        if (project != null) {
+            return project.getName();
+        }
+        return "No project assigned";
+    }
+
+    public String getDeadlineFormatted() {
+        if (deadline == null) return "No deadline set";
+        return deadline.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 }

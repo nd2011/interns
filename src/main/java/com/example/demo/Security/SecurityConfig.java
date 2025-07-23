@@ -92,8 +92,11 @@ public class SecurityConfig {
                     registry.requestMatchers("/meetings").permitAll();
                     registry.requestMatchers("/meetings/create", "/meetings/edit/**", "/meetings/delete/**").hasRole("ADMIN");
 
+
                     // Thêm quyền admin cho dự án
                     registry.requestMatchers("/admin/projects/**").hasRole("ADMIN");
+
+                    registry.requestMatchers("/employees/overview").hasRole("ADMIN");
 
                     // Các URL khác yêu cầu đăng nhập
                     registry.anyRequest().authenticated();

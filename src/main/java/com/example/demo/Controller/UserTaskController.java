@@ -39,7 +39,7 @@ public class UserTaskController {
         MyAppUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
 
-        Set<Project> projects = user.getProjects();
+        List<Project> projects = user.getProjects();
         List<Task> tasks = taskService.getTasksByUser(user);
 
         model.addAttribute("user", user);

@@ -1,5 +1,7 @@
 <!-- fragments/sidebar.html -->
-<div th:fragment="sidebar" class="sidebar-main d-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style="width: 240px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 1050;">
+<div th:fragment="sidebar" class="sidebar-main d-flex flex-column flex-shrink-0 p-3 bg-dark text-white"
+     style="width: 240px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 1050;"
+     xmlns:th="http://www.w3.org/1999/xhtml">
     <a href="/index" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
         <span class="fs-5 fw-bold">Hệ thống QL thực tập sinh</span>
     </a>
@@ -10,6 +12,7 @@
         <li><a href="/product/products" class="nav-link text-white">Quản lý sản phẩm</a></li>
         <li><a href="/meetings" class="nav-link text-white">Danh sách cuộc họp</a></li>
         <li><a href="/user/projects" class="nav-link text-white">Danh sách dự án</a></li>
+        <li><a href="/employees/overview " class="nav-link text-white">Quản lý nhân viên</a></li>
     </ul>
     <hr class="border-light">
     <div class="user-info d-flex flex-column align-items-start ps-1">

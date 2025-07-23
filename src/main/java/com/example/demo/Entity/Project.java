@@ -3,6 +3,7 @@ package com.example.demo.Entity;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 @Entity
 public class Project {
@@ -23,6 +24,9 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<MyAppUser> assignedUsers = new HashSet<>();
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private List<Task> tasks;
 
     // Getter, Setter
 
@@ -56,5 +60,13 @@ public class Project {
 
     public void setAssignedUsers(Set<MyAppUser> assignedUsers) {
         this.assignedUsers = assignedUsers;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

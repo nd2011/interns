@@ -76,5 +76,6 @@ public class Meeting {
     )
     private Set<MyAppUser> participants = new HashSet<>();
 
+
 }
 
