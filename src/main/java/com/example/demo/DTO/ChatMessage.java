@@ -8,6 +8,16 @@ public class ChatMessage {
     private String content;
     private Long conversationId;
 
+    public Long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    private Long receiverId;
+
     public String getSender() {
         return sender;
     }

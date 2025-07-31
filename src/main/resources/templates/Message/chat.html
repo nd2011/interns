@@ -6,10 +6,28 @@
 </head>
 <body>
 <div class="container mt-3">
-    <h3>💬 Real-time Chat</h3>
-    <div id="chat-box" class="border p-3 mb-2" style="height: 300px; overflow-y: scroll;"></div>
-    <input type="text" id="messageInput" class="form-control mb-2" placeholder="Nhập tin nhắn...">
-    <button id="sendBtn" class="btn btn-primary" onclick="sendMessage()" disabled>Gửi</button>
+    <div class="row">
+        <!-- Cột trái: Danh sách người dùng -->
+        <div class="col-md-3 border-end">
+            <h5>👥 Người dùng</h5>
+            <ul class="list-group" id="user-list">
+                <li th:each="u : ${users}"
+                    class="list-group-item list-group-item-action user-item"
+                    th:attr="data-user-id=${u.id}, data-user-name=${u.fullname}"
+                    th:text="${u.fullname}">
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- Cột phải: Giao diện chat -->
+        <div class="col-md-9">
+            <h5 id="chat-with">💬 Chọn người để bắt đầu chat</h5>
+            <div id="chat-box" class="border p-3 mb-2" style="height: 300px; overflow-y: scroll;"></div>
+            <input type="text" id="messageInput" class="form-control mb-2" placeholder="Nhập tin nhắn...">
+            <button id="sendBtn" class="btn btn-primary" onclick="sendMessage()" disabled>Gửi</button>
+        </div>
+    </div>
 </div>
 
 <!-- ✅ Sử dụng link chuẩn classic -->
@@ -18,62 +36,84 @@
 
 
 <script>
+    const username = /*[[${username}]]*/ "ẩn"; // Thymeleaf truyền username
+
     let stompClient;
     let isConnected = false;
+    let currentConversationId = null;
+    let currentReceiverId = null;
+    let currentSubscription = null;
 
     window.onload = function () {
-        console.log("🚀 Đang khởi tạo kết nối WebSocket...");
-
+        console.log("🚀 Đang khởi tạo WebSocket...");
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
             isConnected = true;
-            console.log("✅ WebSocket đã kết nối:", frame);
-
-            // Bật nút gửi
-            const sendBtn = document.getElementById("sendBtn");
-            if (sendBtn) sendBtn.disabled = false;
-
-            // Lắng nghe tin nhắn từ server
-            stompClient.subscribe('/topic/conversation.1', function (message) {
-                const msg = JSON.parse(message.body);
-                const chatBox = document.getElementById("chat-box");
-                chatBox.innerHTML += `<div><b>${msg.sender}:</b> ${msg.content}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight; // Tự cuộn xuống
-            });
-
+            console.log("✅ Đã kết nối WebSocket:", frame);
         }, function (error) {
-            console.error("❌ WebSocket kết nối thất bại:", error);
-            alert("⚠️ Không thể kết nối WebSocket. Kiểm tra server hoặc cấu hình.");
+            console.error("❌ Kết nối WebSocket thất bại:", error);
         });
 
-        // Kiểm tra sau 5 giây nếu chưa kết nối
-        setTimeout(() => {
-            if (!isConnected) {
-                alert("⛔ WebSocket vẫn chưa kết nối sau 5 giây.");
-            }
-        }, 5000);
+        // Gắn sự kiện chọn người dùng từ danh sách
+        document.querySelectorAll('.user-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const userId = item.getAttribute('data-user-id');
+                const userName = item.getAttribute('data-user-name');
+                selectUser(userId, userName);
+            });
+        });
     };
 
+    function selectUser(userId, fullname) {
+        currentReceiverId = userId;
+
+        fetch(`/api/conversation/${userId}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Lỗi khi lấy conversationId");
+                return res.json();
+            })
+            .then(conversationId => {
+                currentConversationId = conversationId;
+                document.getElementById("chat-with").innerText = "💬 Chat với " + fullname;
+                document.getElementById("chat-box").innerHTML = "";
+
+                if (currentSubscription) currentSubscription.unsubscribe();
+
+                currentSubscription = stompClient.subscribe(`/topic/conversation.${conversationId}`, function (message) {
+                    const msg = JSON.parse(message.body);
+                    const chatBox = document.getElementById("chat-box");
+                    chatBox.innerHTML += `<div><b>${msg.sender}:</b> ${msg.content}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+
+                document.getElementById("sendBtn").disabled = false;
+            })
+            .catch(error => {
+                console.error("❌ Lỗi khi lấy conversationId:", error);
+                alert("Không thể lấy thông tin cuộc trò chuyện.");
+            });
+    }
+
     function sendMessage() {
-        if (!isConnected || !stompClient.connected) {
-            alert("⛔ WebSocket chưa sẵn sàng. Vui lòng chờ kết nối...");
+        if (!isConnected || !currentConversationId || !currentReceiverId) {
+            alert("⛔ Vui lòng chọn người để chat.");
             return;
         }
 
-        const content = document.getElementById("messageInput").value;
-        if (!content.trim()) return;
+        const content = document.getElementById("messageInput").value.trim();
+        if (!content) return;
 
+        // ✅ Gửi chỉ receiverId → server sẽ tìm conversation và broadcast
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({
-            sender: "admin", // có thể sửa thành user thật sau
+            sender: username,
             content: content,
-            conversationId: 1
+            receiverId: currentReceiverId
         }));
 
         document.getElementById("messageInput").value = "";
     }
 </script>
-
 </body>
 </html>
