@@ -79,7 +79,9 @@
                 document.getElementById("chat-with").innerText = "💬 Chat với " + fullname;
                 document.getElementById("chat-box").innerHTML = "";
 
-                if (currentSubscription) currentSubscription.unsubscribe();
+                if (currentSubscription) {
+                    currentSubscription.unsubscribe(); // Hủy subscription cũ
+                }
 
                 currentSubscription = stompClient.subscribe(`/topic/conversation.${conversationId}`, function (message) {
                     const msg = JSON.parse(message.body);

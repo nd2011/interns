@@ -2,21 +2,17 @@ package com.example.demo.DTO;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ChatMessage {
     private String sender;
+    private Long receiverId;
     private String content;
     private Long conversationId;
+    private LocalDateTime timestamp;
 
-    public Long getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(Long receiverId) {
-        this.receiverId = receiverId;
-    }
-
-    private Long receiverId;
+    // Getter and Setter
 
     public String getSender() {
         return sender;
@@ -24,6 +20,14 @@ public class ChatMessage {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public Long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
     }
 
     public String getContent() {
@@ -41,4 +45,13 @@ public class ChatMessage {
     public void setConversationId(Long conversationId) {
         this.conversationId = conversationId;
     }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
+

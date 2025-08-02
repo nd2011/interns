@@ -19,19 +19,21 @@ public class ConversationService {
 
     @Transactional
     public Conversation findOrCreatePrivateConversation(MyAppUser user1, MyAppUser user2) {
-        Set<MyAppUser> pair = new HashSet<>(Set.of(user1, user2));
+        // Tìm cuộc trò chuyện giữa hai người dùng
+        List<Conversation> conversations = conversationRepository.findByParticipantsContains(user1, user2);
 
-        List<Conversation> allConversations = conversationRepository.findAll(); // nếu cần eager fetch thì sửa lại ở repository
-
-        return allConversations.stream()
-                .filter(c -> c.getParticipants().size() == 2 && c.getParticipants().containsAll(pair))
+        return conversations.stream()
+                .filter(c -> c.getParticipants().size() == 2)
                 .findFirst()
                 .orElseGet(() -> {
+                    // Tạo mới cuộc trò chuyện nếu không tìm thấy
+                    Set<MyAppUser> participants = new HashSet<>(Set.of(user1, user2));
                     Conversation newConv = new Conversation();
-                    newConv.setParticipants(pair);
+                    newConv.setParticipants(participants);
                     return conversationRepository.save(newConv);
                 });
     }
+
 
     public List<Conversation> findAll() {
         return conversationRepository.findAll();
