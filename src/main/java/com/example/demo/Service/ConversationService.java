@@ -46,4 +46,9 @@ public class ConversationService {
     public Conversation findById(Long id) {
         return conversationRepository.findById(id).orElse(null);
     }
+
+    public Conversation findConversationById(Long conversationId) {
+        return conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+    }
 }
