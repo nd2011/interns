@@ -8,5 +8,10 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findByConversationIdOrderByTimestamp(Long conversationId);
+
+    // ĐÚNG: dùng _ để trỏ vào field id của quan hệ conversation
+    List<Message> findByConversation_IdOrderByTimestampAsc(Long conversationId);
+
+    // Nếu muốn mới nhất trước:
+    // List<Message> findByConversation_IdOrderByTimestampDesc(Long conversationId);
 }

@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.ChatMessage;
+import com.example.demo.DTO.MessageDTO;
 import com.example.demo.Entity.Conversation;
 import com.example.demo.Entity.MyAppUser;
 import com.example.demo.Entity.Message;
@@ -42,27 +43,36 @@ public class ChatController {
     // Phương thức nhận tin nhắn từ client và gửi lại qua WebSocket
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload ChatMessage chatMessage, Principal principal) {
-        // Lấy thông tin người gửi từ principal (tên người dùng đang đăng nhập)
-        MyAppUser sender = myAppUserRepository.findByUsername(principal.getName()).orElseThrow();
-        MyAppUser receiver = myAppUserRepository.findById(chatMessage.getReceiverId()).orElseThrow();
+        // 1. Lấy thông tin người gửi & người nhận
+        MyAppUser sender = myAppUserRepository.findByUsername(principal.getName())
+                .orElseThrow();
+        MyAppUser receiver = myAppUserRepository.findById(chatMessage.getReceiverId())
+                .orElseThrow();
 
-        // Tìm hoặc tạo cuộc trò chuyện giữa người gửi và người nhận
+        // 2. Tìm hoặc tạo cuộc trò chuyện
         Conversation conversation = conversationService.findOrCreatePrivateConversation(sender, receiver);
 
-        // Cập nhật thông tin người gửi và cuộc trò chuyện cho tin nhắn
-        chatMessage.setSender(sender.getFullname());
-        chatMessage.setConversationId(conversation.getId());
-
-        // Lưu tin nhắn vào cơ sở dữ liệu
+        // 3. Tạo entity Message để lưu DB
         Message message = new Message();
-        message.setSender(sender);  // Người gửi
-        message.setConversation(conversation);  // Cuộc trò chuyện
-        message.setContent(chatMessage.getContent());  // Nội dung tin nhắn
-        message.setTimestamp(LocalDateTime.now());  // Thời gian gửi tin nhắn
+        message.setSender(sender);
+        message.setConversation(conversation);
+        message.setContent(chatMessage.getContent());   // nội dung
+        message.setTimestamp(LocalDateTime.now());
         messageRepository.save(message);
 
-        // Gửi tin nhắn qua WebSocket tới topic conversationId
-        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), chatMessage);
+        // 4. Tạo ChatMessage response để trả về WebSocket (chắc chắn có dữ liệu)
+        ChatMessage response = new ChatMessage();
+        response.setSender(sender.getFullname());          // tên đầy đủ
+        response.setReceiverId(receiver.getId());          // id người nhận
+        response.setContent(message.getContent());         // nội dung đã lưu
+        response.setConversationId(conversation.getId());  // id hội thoại
+        response.setTimestamp(message.getTimestamp());     // thời gian gửi
+
+        // 5. Publish qua topic
+        messagingTemplate.convertAndSend(
+                "/topic/conversation." + conversation.getId(),
+                response
+        );
     }
 
     // API để lấy conversationId
@@ -74,12 +84,17 @@ public class ChatController {
         Conversation conversation = conversationService.findOrCreatePrivateConversation(sender, receiver);
         return conversation.getId();
     }
+    // ChatController.java
     @GetMapping("/api/messages/{conversationId}")
     @ResponseBody
-    public List<Message> getMessagesByConversationId(@PathVariable Long conversationId) {
-        // Truy vấn tất cả các tin nhắn trong cuộc trò chuyện theo ID và sắp xếp theo timestamp
-        List<Message> messages = messageRepository.findByConversationIdOrderByTimestamp(conversationId);
-        return messages;
+    public List<MessageDTO> getMessagesByConversationId(@PathVariable Long conversationId) {
+        return messageRepository
+                .findByConversation_IdOrderByTimestampAsc(conversationId)
+                .stream()
+                .map(MessageDTO::from)
+                .toList();
     }
+
+
 
 }

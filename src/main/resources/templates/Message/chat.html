@@ -125,8 +125,9 @@ function loadMessages(conversationId) {
             // Hiển thị tất cả tin nhắn
             messages.forEach(msg => {
                 // Truy cập vào các thuộc tính của msg.sender và msg.content
-                 const senderName = msg.sender ? msg.sender.fullname : "Không xác định";
-                const messageContent = msg.content ? msg.content : "Không có nội dung";
+                 const senderName = msg.senderName || "Không xác định";
+                const messageContent = msg.content || "(trống)";
+
 
                 chatBox.innerHTML += `<div><b>${senderName}:</b> ${messageContent}</div>`;
             });
