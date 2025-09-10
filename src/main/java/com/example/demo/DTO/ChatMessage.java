@@ -6,6 +6,15 @@ import java.time.LocalDateTime;
 
 @Data
 public class ChatMessage {
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    private Long senderId;
     private String sender;
     private Long receiverId;
     private String content;
@@ -13,6 +22,7 @@ public class ChatMessage {
     private LocalDateTime timestamp;
 
     // Getter and Setter
+
 
     public String getSender() {
         return sender;
@@ -53,5 +63,7 @@ public class ChatMessage {
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
+
+
 }
 

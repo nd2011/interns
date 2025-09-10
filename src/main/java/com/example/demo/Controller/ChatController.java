@@ -35,9 +35,25 @@ public class ChatController {
     private MessageRepository messageRepository;
     @GetMapping("/chat")
     public String chatPage(Model model, Principal principal) {
-        model.addAttribute("username", principal.getName());
-        model.addAttribute("users", myAppUserRepository.findAll()); // bạn có thể lọc chính mình nếu muốn
-        return "Message/chat";  // Trả về view "Message/chat"
+        // username đang đăng nhập
+        String loginUsername = principal.getName();
+        model.addAttribute("username", loginUsername);
+
+        // Lấy user hiện tại
+        MyAppUser me = myAppUserRepository.findByUsername(loginUsername)
+                .orElseThrow();
+
+        // Lọc danh sách: bỏ chính mình
+        List<MyAppUser> users = myAppUserRepository.findAll()
+                .stream()
+                .filter(u -> !u.getId().equals(me.getId()))
+                .toList();
+
+        // Truyền xuống view
+        model.addAttribute("currentUserId", me.getId()); // dùng cho Thymeleaf/JS
+        model.addAttribute("users", users);
+
+        return "Message/chat";
     }
 
     // Phương thức nhận tin nhắn từ client và gửi lại qua WebSocket
@@ -62,7 +78,8 @@ public class ChatController {
 
         // 4. Tạo ChatMessage response để trả về WebSocket (chắc chắn có dữ liệu)
         ChatMessage response = new ChatMessage();
-        response.setSender(sender.getFullname());          // tên đầy đủ
+        response.setSenderId(sender.getId());
+        response.setSender(sender.getFullname());
         response.setReceiverId(receiver.getId());          // id người nhận
         response.setContent(message.getContent());         // nội dung đã lưu
         response.setConversationId(conversation.getId());  // id hội thoại
@@ -80,6 +97,9 @@ public class ChatController {
     @ResponseBody
     public Long getConversationId(@PathVariable Long receiverId, Principal principal) {
         MyAppUser sender = myAppUserRepository.findByUsername(principal.getName()).orElseThrow();
+        if (sender.getId().equals(receiverId)){
+            throw  new IllegalArgumentException("Không thể tạo hội thoại với chính mình");
+        }
         MyAppUser receiver = myAppUserRepository.findById(receiverId).orElseThrow();
         Conversation conversation = conversationService.findOrCreatePrivateConversation(sender, receiver);
         return conversation.getId();

@@ -3,32 +3,38 @@
 <head>
     <title>Chat</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/chat-style.css">
 </head>
 <body>
-<div class="container mt-3">
-    <div class="row">
-        <!-- Cột trái: Danh sách người dùng -->
-        <div class="col-md-3 border-end">
-            <h5>👥 Người dùng</h5>
+<div class="container mt-4">
+    <div class="chat-shell row g-0">
+        <!-- Cột trái -->
+        <div class="left-pane col-md-4 col-lg-3">
+            <h5 class="section-title">👥 Người dùng</h5>
+            <!-- (tuỳ chọn) ô tìm kiếm user
+                <div class="user-search">
+                  <input type="text" class="form-control form-control-sm" placeholder="Tìm kiếm...">
+                </div>
+                -->
             <ul class="list-group" id="user-list">
                 <li th:each="u : ${users}"
+                    th:if="${u.id} != ${currentUserId}"
                     class="list-group-item list-group-item-action user-item"
                     th:attr="data-user-id=${u.id}, data-user-name=${u.fullname}"
                     th:text="${u.fullname}">
                 </li>
-
             </ul>
         </div>
 
-        <!-- Cột phải: Giao diện chat -->
-        <div class="col-md-9">
+        <!-- Cột phải -->
+        <div class="right-pane col-md-8 col-lg-9">
             <h5 id="chat-with">💬 Chọn người để bắt đầu chat</h5>
-            <div id="chat-box" class="border p-3 mb-2" style="max-height: 400px; overflow-y: scroll;"></div>
-            <input type="text" id="messageInput" class="form-control mb-2" placeholder="Nhập tin nhắn...">
-            <button id="sendBtn" class="btn btn-primary" onclick="sendMessage()" disabled>Gửi</button>
+            <div id="chat-box" class="mb-3"></div>
+            <div class="composer">
+                <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
+                <button id="sendBtn" class="btn btn-primary" onclick="sendMessage()" disabled>Gửi</button>
+            </div>
         </div>
-
-
     </div>
 </div>
 
@@ -36,132 +42,149 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
+<script th:inline="javascript">
 
-<script>
     const username = /*[[${username}]]*/ "ẩn"; // Thymeleaf truyền username
+      const currentUserId = /*[[${currentUserId}]]*/ 0; // Thymeleaf truyền ID
 
-  let stompClient;
-  let isConnected = false;
-  let currentConversationId = null;
-  let currentReceiverId = null;
-  let currentSubscription = null;
+      let stompClient;
+      let isConnected = false;
+      let currentConversationId = null;
+      let currentReceiverId = null;
+      let currentSubscription = null;
 
-  window.onload = function () {
-      console.log("🚀 Đang khởi tạo WebSocket...");
-      const socket = new SockJS('/ws');
-      stompClient = Stomp.over(socket);
+      // escape để tránh XSS khi render text
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, s => (
+          { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s]
+        ));
+      }
 
-      stompClient.connect({}, function (frame) {
+      function renderMessage(senderId, senderName, content) {
+        const chatBox = document.getElementById("chat-box");
+        const isMe = (String(senderId) === String(currentUserId)); // 👈 so ID
+        const label = isMe ? "Bạn" : senderName;
+
+        chatBox.insertAdjacentHTML('beforeend', `
+          <div class="msg ${isMe ? 'me' : 'other'}">
+            <div class="sender">${escapeHtml(label)}</div>
+            <div class="bubble">${escapeHtml(content)}</div>
+          </div>
+        `);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      window.onload = function () {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
           isConnected = true;
-          console.log("✅ Đã kết nối WebSocket:", frame);
-      }, function (error) {
-          console.error("❌ Kết nối WebSocket thất bại:", error);
-      });
+          console.log("✅ WebSocket:", frame);
+        }, function (error) {
+          console.error("❌ WS lỗi:", error);
+        });
 
-      // Gắn sự kiện chọn người dùng từ danh sách
-      document.querySelectorAll('.user-item').forEach(item => {
+        // click user + active
+        document.querySelectorAll('.user-item').forEach(item => {
           item.addEventListener('click', () => {
-              const userId = item.getAttribute('data-user-id');
-              const userName = item.getAttribute('data-user-name');
-              selectUser(userId, userName);
+            document.querySelectorAll('.user-item').forEach(li => li.classList.remove('active'));
+            item.classList.add('active');
+
+            const userId = item.getAttribute('data-user-id');
+            const userName = item.getAttribute('data-user-name');
+            selectUser(userId, userName);
           });
-      });
-  };
+        });
 
-  function selectUser(userId, fullname) {
-    currentReceiverId = userId;
+        // Enter để gửi
+        const inputEl = document.getElementById("messageInput");
+        inputEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+      };
 
-    // Lấy conversationId từ API
-    fetch(`/api/conversation/${userId}`)
-        .then(res => {
+      function selectUser(userId, fullname) {
+        currentReceiverId = userId;
+
+        fetch(`/api/conversation/${userId}`)
+          .then(res => {
             if (!res.ok) throw new Error("Lỗi khi lấy conversationId");
             return res.json();
-        })
-        .then(conversationId => {
-            console.log("Conversation ID từ API: ", conversationId);
+          })
+          .then(conversationId => {
             currentConversationId = conversationId;
             document.getElementById("chat-with").innerText = "💬 Chat với " + fullname;
             document.getElementById("chat-box").innerHTML = "";
 
-            // Lấy các tin nhắn từ API
-            loadMessages(conversationId);  // Gọi API để lấy tin nhắn trong cuộc trò chuyện
+            // load lịch sử
+            loadMessages(conversationId);
 
-            if (currentSubscription) {
-                currentSubscription.unsubscribe(); // Hủy subscription cũ
-            }
+            if (currentSubscription) currentSubscription.unsubscribe();
 
-            currentSubscription = stompClient.subscribe(`/topic/conversation.${conversationId}`, function (message) {
-    const msg = JSON.parse(message.body);
-    console.log("Tin nhắn nhận được: ", msg);  // Kiểm tra tin nhắn nhận được
-
-    // Đảm bảo `msg.sender` và `msg.content` là chuỗi
-    const sender = msg.sender || "Không rõ người gửi";  // Kiểm tra nếu sender là null/undefined
-    const content = msg.content || "Nội dung tin nhắn không xác định";  // Kiểm tra nếu content là null/undefined
-
-    const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML += `<div><b>${sender}:</b> ${content}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;  // Cuộn tới tin nhắn mới nhất
-});
-
+            currentSubscription = stompClient.subscribe(
+              `/topic/conversation.${conversationId}`,
+              function (message) {
+                const msg = JSON.parse(message.body);
+                renderMessage(
+                  msg.senderId,                           // 👈 lấy senderId từ WS
+                  msg.sender || "Không rõ người gửi",
+                  msg.content || "Nội dung tin nhắn không xác định"
+                );
+              }
+            );
 
             document.getElementById("sendBtn").disabled = false;
-        })
-        .catch(error => {
+          })
+          .catch(error => {
             console.error("❌ Lỗi khi lấy conversationId:", error);
             alert("Không thể lấy thông tin cuộc trò chuyện.");
-        });
-}
-
-// Hàm để tải các tin nhắn từ API
-function loadMessages(conversationId) {
-    fetch(`/api/messages/${conversationId}`)  // Gọi API để lấy tin nhắn
-        .then(response => response.json())  // Chuyển đổi phản hồi JSON
-        .then(messages => {
-            console.log("Tin nhắn trong cuộc trò chuyện: ", messages);
-
-            const chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML = "";  // Xóa tin nhắn cũ trong chat-box
-
-            // Hiển thị tất cả tin nhắn
-            messages.forEach(msg => {
-                // Truy cập vào các thuộc tính của msg.sender và msg.content
-                 const senderName = msg.senderName || "Không xác định";
-                const messageContent = msg.content || "(trống)";
-
-
-                chatBox.innerHTML += `<div><b>${senderName}:</b> ${messageContent}</div>`;
-            });
-
-            chatBox.scrollTop = chatBox.scrollHeight;  // Cuộn đến tin nhắn mới nhất
-        })
-        .catch(error => {
-            console.error("Lỗi khi tải tin nhắn:", error);
-        });
-}
-
-  function sendMessage() {
-      if (!isConnected || !currentConversationId || !currentReceiverId) {
-          alert("⛔ Vui lòng chọn người để chat.");
-          return;
+          });
       }
 
-      const content = document.getElementById("messageInput").value.trim();
-      if (!content) return;
+      function loadMessages(conversationId) {
+        fetch(`/api/messages/${conversationId}`)
+          .then(response => response.json())
+          .then(messages => {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = "";
+            messages.forEach(msg => {
+              renderMessage(
+                msg.senderId,                          // 👈 lấy senderId từ DTO
+                msg.senderName || "Không xác định",
+                msg.content || "(trống)"
+              );
+            });
+          })
+          .catch(error => {
+            console.error("Lỗi khi tải tin nhắn:", error);
+          });
+      }
 
-      // Gửi tin nhắn tới WebSocket server
-      const chatMessage = {
+      function sendMessage() {
+        if (!isConnected || !currentConversationId || !currentReceiverId) {
+          alert("⛔ Vui lòng chọn người để chat.");
+          return;
+        }
+
+        const input = document.getElementById("messageInput");
+        const content = input.value.trim();
+        if (!content) return;
+
+        const chatMessage = {
           sender: username,
+          senderId: currentUserId,  // 👈 thêm senderId vào payload
           content: content,
           receiverId: currentReceiverId,
           conversationId: currentConversationId
-      };
+        };
 
-      stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-
-      document.getElementById("messageInput").value = "";  // Xóa nội dung tin nhắn
-  }
-
-
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        input.value = "";
+      }
 </script>
 </body>
 </html>
