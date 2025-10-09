@@ -4,9 +4,9 @@ server:
     include-binding-errors: always
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/registration    # <-- Đúng là quanly
+    url: jdbc:mysql://localhost:3306/quanly?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: ""                                 # hoặc để trống: password:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -22,3 +22,6 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.web: DEBUG
+jwt:
+  secret: MY_SECRET_KEY_1234567890_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  expiration: 86400000  # 1 ngày (ms)
