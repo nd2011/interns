@@ -74,6 +74,8 @@ public class SecurityConfig {
 
                     // Các URL public
                     registry.requestMatchers("/req/signup", "/css/**", "/js/**").permitAll();
+                    // ✅ Cho phép các trang / API chat & websocket
+                    registry.requestMatchers("/chat/**", "/api/**", "/ws/**").authenticated();
 
                     // Cho phép cả ADMIN và USER xem danh sách thực tập sinh
                     registry.requestMatchers("/interns", "/interns/**").hasAnyRole("ADMIN", "USER");
