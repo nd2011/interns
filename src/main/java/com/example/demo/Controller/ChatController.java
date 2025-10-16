@@ -9,6 +9,8 @@ import com.example.demo.Repository.MessageRepository;
 import com.example.demo.Repository.MyAppUserRepository;
 import com.example.demo.Service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -95,15 +97,25 @@ public class ChatController {
     // API để lấy conversationId
     @GetMapping("/api/conversation/{receiverId}")
     @ResponseBody
-    public Long getConversationId(@PathVariable Long receiverId, Principal principal) {
-        MyAppUser sender = myAppUserRepository.findByUsername(principal.getName()).orElseThrow();
-        if (sender.getId().equals(receiverId)){
-            throw  new IllegalArgumentException("Không thể tạo hội thoại với chính mình");
+    public ResponseEntity<?> getConversationId(@PathVariable Long receiverId, Principal principal) {
+        if (principal == null) {
+            // chưa đăng nhập
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Bạn cần đăng nhập trước khi thực hiện hành động này.");
         }
+
+        MyAppUser sender = myAppUserRepository.findByUsername(principal.getName()).orElseThrow();
+        if (sender.getId().equals(receiverId)) {
+            return ResponseEntity.badRequest().body("Không thể tạo hội thoại với chính mình");
+        }
+
         MyAppUser receiver = myAppUserRepository.findById(receiverId).orElseThrow();
         Conversation conversation = conversationService.findOrCreatePrivateConversation(sender, receiver);
-        return conversation.getId();
+
+        // trả về ID hội thoại khi thành công
+        return ResponseEntity.ok(conversation.getId());
     }
+
     // ChatController.java
     @GetMapping("/api/messages/{conversationId}")
     @ResponseBody

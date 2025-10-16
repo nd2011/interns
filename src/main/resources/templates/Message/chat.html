@@ -107,46 +107,62 @@
         });
       };
 
-      function selectUser(userId, fullname) {
+      async function selectUser(userId, fullname) {
         currentReceiverId = userId;
+        document.getElementById("chat-with").innerText = "💬 Chat với " + fullname;
+        document.getElementById("chat-box").innerHTML = "<p class='text-muted text-center fst-italic'>Đang tải hội thoại...</p>";
 
-        fetch(`/api/conversation/${userId}`)
-          .then(res => {
-            if (!res.ok) throw new Error("Lỗi khi lấy conversationId");
-            return res.json();
-          })
-          .then(conversationId => {
-            currentConversationId = conversationId;
-            document.getElementById("chat-with").innerText = "💬 Chat với " + fullname;
-            document.getElementById("chat-box").innerHTML = "";
+        try {
+          // ✅ Gọi API để lấy hoặc tự tạo hội thoại (backend tự xử lý)
+          const res = await fetch(`/api/conversation/${userId}`, { credentials: "include" });
 
-            // load lịch sử
-            loadMessages(conversationId);
+          // Nếu lỗi 500 hoặc 404 (VD: DB trống, user chưa có)
+          if (!res.ok) {
+            console.warn("⚠️ Tạo mới hội thoại do không tìm thấy cuộc trò chuyện cũ...");
+            // Thử gọi lại 1 lần (backend findOrCreate đã xử lý tạo mới)
+            const retry = await fetch(`/api/conversation/${userId}`, { credentials: "include" });
+            if (!retry.ok) throw new Error("Không thể tạo hội thoại mới!");
+            const conversationId = await retry.json();
+            handleConversation(conversationId, fullname);
+            return;
+          }
 
-            if (currentSubscription) currentSubscription.unsubscribe();
+          // ✅ Nếu lấy được ID bình thường
+          const conversationId = await res.json();
+          handleConversation(conversationId, fullname);
 
-            currentSubscription = stompClient.subscribe(
-              `/topic/conversation.${conversationId}`,
-              function (message) {
-                const msg = JSON.parse(message.body);
-                renderMessage(
-                  msg.senderId,                           // 👈 lấy senderId từ WS
-                  msg.sender || "Không rõ người gửi",
-                  msg.content || "Nội dung tin nhắn không xác định"
-                );
-              }
-            );
+        } catch (error) {
+          console.error("❌ Lỗi hội thoại:", error);
+          document.getElementById("chat-box").innerHTML =
+            "<p class='text-danger text-center'>Không thể lấy hoặc tạo hội thoại.</p>";
+        }
+      }
 
-            document.getElementById("sendBtn").disabled = false;
-          })
-          .catch(error => {
-            console.error("❌ Lỗi khi lấy conversationId:", error);
-            alert("Không thể lấy thông tin cuộc trò chuyện.");
-          });
+      function handleConversation(conversationId, fullname) {
+        currentConversationId = conversationId;
+        console.log("📂 Conversation ID:", conversationId);
+
+        // Hủy subscription cũ nếu có
+        if (currentSubscription) currentSubscription.unsubscribe();
+
+        // Đăng ký lắng nghe WebSocket cho cuộc trò chuyện này
+        currentSubscription = stompClient.subscribe(
+          `/topic/conversation.${conversationId}`,
+          function (message) {
+            const msg = JSON.parse(message.body);
+            renderMessage(msg.senderId, msg.sender || "Không rõ", msg.content || "(trống)");
+          }
+        );
+
+        // Bật nút gửi và load lịch sử
+        document.getElementById("sendBtn").disabled = false;
+        loadMessages(conversationId);
       }
 
       function loadMessages(conversationId) {
-        fetch(`/api/messages/${conversationId}`)
+        fetch(`/api/messages/${conversationId}`, {
+          credentials: "include"  // 👈 bắt buộc thêm
+        })
           .then(response => response.json())
           .then(messages => {
             const chatBox = document.getElementById("chat-box");

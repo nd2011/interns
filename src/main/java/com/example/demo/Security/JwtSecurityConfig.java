@@ -10,7 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@Order(1) // Ưu tiên cấu hình này chạy trước form-login config
+@Order(1)
 public class JwtSecurityConfig {
 
     private final JwtFilter jwtFilter;
@@ -22,11 +22,15 @@ public class JwtSecurityConfig {
     @Bean
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/**") // chỉ áp dụng cho các route /api/**
+                .securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // ✅ cho phép session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/conversation/**",
+                                "/api/messages/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -38,3 +42,4 @@ public class JwtSecurityConfig {
         return cfg.getAuthenticationManager();
     }
 }
+

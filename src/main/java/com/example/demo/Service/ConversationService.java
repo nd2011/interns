@@ -19,20 +19,28 @@ public class ConversationService {
 
     @Transactional
     public Conversation findOrCreatePrivateConversation(MyAppUser user1, MyAppUser user2) {
-        // Tìm cuộc trò chuyện giữa hai người dùng
+        if (user1 == null || user2 == null) {
+            throw new IllegalArgumentException("User1 hoặc User2 bị null");
+        }
+
+        // 🔍 Tìm hội thoại giữa 2 người
         List<Conversation> conversations = conversationRepository.findByParticipantsContains(user1, user2);
 
-        return conversations.stream()
-                .filter(c -> c.getParticipants().size() == 2)
-                .findFirst()
-                .orElseGet(() -> {
-                    // Tạo mới cuộc trò chuyện nếu không tìm thấy
-                    Set<MyAppUser> participants = new HashSet<>(Set.of(user1, user2));
-                    Conversation newConv = new Conversation();
-                    newConv.setParticipants(participants);
-                    return conversationRepository.save(newConv);
-                });
+        if (!conversations.isEmpty()) {
+            return conversations.get(0);
+        }
+
+        // 🆕 Nếu chưa có, tạo mới
+        Conversation newConv = new Conversation();
+        Set<MyAppUser> participants = new HashSet<>();
+        participants.add(user1);
+        participants.add(user2);
+        newConv.setParticipants(participants);
+
+        System.out.println("🔥 Tạo hội thoại mới giữa " + user1.getFullname() + " và " + user2.getFullname());
+        return conversationRepository.save(newConv);
     }
+
 
 
     public List<Conversation> findAll() {
